@@ -1,24 +1,24 @@
 <template>
-  <VerticalBar style="height: 800px"></VerticalBar>
+  <zg-tree @collapseChange="collapseChange"></zg-tree>
 </template>
 
 <script>
-import VerticalBar from './components/VerticalBar/client.vue';
+import zgTree from './components/ZgTree/ZgTree.vue';
 export default {
   name: 'App',
   components: {
-    VerticalBar
-}
+    zgTree
+  },
+  methods: {
+    collapseChange(item, index) {
+    },
+  }
 }
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+body,html {
+  padding: 0;
+  margin: 0;
 }
 </style>
