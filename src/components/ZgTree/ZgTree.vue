@@ -74,12 +74,12 @@ li {
   user-select: none;
 }
 
-<<<<<<< Updated upstream .zg-content {
+.zg-content {
   display: inline-block;
   vertical-align: middle;
 }
 
-=======>>>>>>>Stashed changes .zg-triangle {
+.zg-triangle {
   width: 20px;
   height: 26px;
   line-height: 26px;
