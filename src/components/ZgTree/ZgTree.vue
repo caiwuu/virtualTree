@@ -1,21 +1,24 @@
 <template>
   <div>
-    <div class="zg-tree" v-for="(item,index) in data" :key="index" :style="{marginLeft:((item.level-1) * levelDistance)+'px'}"  @click="collapseChange(item,index)">
-      <div class="zg-triangle" v-if="item.collapsed">
-        <div class="zg-triangle-right"></div>
+    <div class="zg-tree"
+         v-for="(item,index) in data"
+         :key="index"
+         :style="{marginLeft:(item.level * levelDistance)+'px'}"
+         @click="collapseChange(item,index)"
+    >
+      <div class="zg-triangle">
+        <div class="zg-triangle-right" v-if="item.collapsed && !item.isLeaf"></div>
+        <div class="zg-triangle-bottom" v-if="!item.collapsed && !item.isLeaf"></div>
       </div>
-      <div class="zg-triangle" v-else>
-        <div class="zg-triangle-bottom"></div>
-      </div>
-      <span>
+      <div class="zg-content">
          {{item.name}}
-      </span>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import {data} from '../../utils/data.js'
+import {data} from '@/utils/data'
 export default {
   components: { },
   props: {
@@ -67,12 +70,20 @@ li {
 }
 .zg-tree {
   width: 200px;
-  height: 30px;
+  height: 26px;
+  line-height: 26px;
   user-select: none;
+}
+.zg-content {
+  display: inline-block;
+  vertical-align: middle;
 }
 .zg-triangle {
   width: 20px;
+  height: 26px;
+  line-height: 26px;
   text-align: center;
+  vertical-align: middle;
   display: inline-block;
 }
 .zg-triangle-right {
@@ -80,19 +91,19 @@ li {
   display: inline-block;
   width: 0;
   height: 0;
-  border-top: 6px solid transparent;
-  border-left: 8px solid #c0c4cc;
+  border-top: 4px solid transparent;
+  border-left: 6px solid #c0c4cc;
   border-right: 0 solid transparent;
-  border-bottom: 6px solid transparent;
+  border-bottom: 4px solid transparent;
 }
 .zg-triangle-bottom {
   vertical-align: middle;
   display: inline-block;
   width: 0;
   height: 0;
-  border-top: 8px solid #c0c4cc;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
+  border-top: 6px solid #c0c4cc;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
   border-bottom: 0 solid transparent;
 }
 </style>
