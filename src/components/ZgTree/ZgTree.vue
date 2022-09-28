@@ -1,26 +1,23 @@
 <template>
   <div>
-    <div class="zg-tree"
-         v-for="(item,index) in data"
-         :key="index"
-         :style="{marginLeft:(item.level * levelDistance)+'px'}"
-         @click="collapseChange(item,index)"
-    >
+    <div class="zg-tree" v-for="(item,index) in data" :key="index"
+      :style="{marginLeft:(item.level * levelDistance)+'px'}" @click="collapseChange(item,index)">
       <div class="zg-triangle">
         <div class="zg-triangle-right" v-if="item.collapsed && !item.isLeaf"></div>
         <div class="zg-triangle-bottom" v-if="!item.collapsed && !item.isLeaf"></div>
       </div>
       <div class="zg-content">
-         {{item.name}}
+        {{item.name}}
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import {data} from '@/utils/data'
+// import { data } from '@/utils/data'
+import { data } from '@/mock'
 export default {
-  components: { },
+  components: {},
   props: {
     levelDistance: {
       type: [Number],
@@ -33,7 +30,7 @@ export default {
   },
   data() {
     return {
-      data
+      data: data.list
     };
   },
   computed() {
@@ -65,20 +62,24 @@ ul {
   padding: 0;
   margin: 0;
 }
+
 li {
   list-style: none;
 }
+
 .zg-tree {
   width: 200px;
   height: 26px;
   line-height: 26px;
   user-select: none;
 }
-.zg-content {
+
+<<<<<<< Updated upstream .zg-content {
   display: inline-block;
   vertical-align: middle;
 }
-.zg-triangle {
+
+=======>>>>>>>Stashed changes .zg-triangle {
   width: 20px;
   height: 26px;
   line-height: 26px;
@@ -86,6 +87,7 @@ li {
   vertical-align: middle;
   display: inline-block;
 }
+
 .zg-triangle-right {
   vertical-align: middle;
   display: inline-block;
@@ -96,6 +98,7 @@ li {
   border-right: 0 solid transparent;
   border-bottom: 4px solid transparent;
 }
+
 .zg-triangle-bottom {
   vertical-align: middle;
   display: inline-block;

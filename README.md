@@ -3,7 +3,7 @@
  * @Description: 
  * @CreateDate: 
  * @LastEditor: 
- * @LastEditTime: 2022-09-26 17:07:40
+ * @LastEditTime: 2022-09-28 10:20:58
 -->
 # 设计文档
 ## 数据结构
@@ -13,25 +13,33 @@
          id:11,
          pid:10,
          level:0,
-         data:{}
+         collapsed:true,
+         isLeaf:true,
+         data:{},
      },
       {
          id:11,
          pid:10,
          level:1,
-         data:{}
+         collapsed:true,
+         isLeaf:true,
+         data:{},
      },
       {
          id:11,
          pid:10,
          level:0,
-         data:{}
+         collapsed:true,
+         isLeaf:true,
+         data:{},
      },
       {
          id:11,
          pid:10,
          level:1,
-         data:{}
+         collapsed:true,
+         isLeaf:true,
+         data:{},
      },
  ]
 ```

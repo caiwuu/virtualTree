@@ -3,11 +3,7 @@
     <div ref="wrap">
       <slot></slot>
     </div>
-    <Vertical-bar
-      :height="barHeight"
-      :top="barTop"
-      @on-top-change="handleTopChange"
-    >
+    <Vertical-bar :height="barHeight" :top="barTop" @on-top-change="handleTopChange">
     </Vertical-bar>
   </div>
 </template>
@@ -30,12 +26,12 @@ export default {
     onscrollChange() {
       this.$emit("onScrollChange", this.scrollTop);
     },
-    handleTopChange(){
+    handleTopChange() {
       const percentage = top / (this.$refs['client'].clientHeight - this.barHeight);
-        const scrollTop = (this.$refs.wrap.clientHeight - this.$refs['client'].clientHeight) * percentage;
+      const scrollTop = (this.$refs.wrap.clientHeight - this.$refs['client'].clientHeight) * percentage;
 
-        this.setScrollTop(scrollTop);
-        this.onscrollChange();
+      this.setScrollTop(scrollTop);
+      this.onscrollChange();
     },
     // 在内容改变时计算高度
     setScrollTop(scrollTop) {
