@@ -1,12 +1,21 @@
 <template>
   <div>
-    <div class="zg-tree" v-for="(item,index) in list" :key="index"
-      :style="{paddingLeft:(item.level * levelDistance)+'px'}" @click="collapseChange(item,index)">
+    <div class="zg-tree"
+         v-for="(item,index) in list"
+         :key="index"
+         :style="{
+             paddingLeft: (item.level * levelDistance)+'px',
+             height: itemHeight + 'px'
+           }"
+         @click="collapseChange(item,index)">
       <div class="zg-triangle">
         <div class="zg-triangle-right" v-if="item.collapsed && !item.isLeaf"></div>
         <div class="zg-triangle-bottom" v-if="!item.collapsed && !item.isLeaf"></div>
       </div>
-      <label class="zg-checkbox" @click.stop="selectChange(item,index)">
+      <label class="zg-checkbox"
+             v-if="showCheckbox"
+             @click.stop="selectChange(item,index)"
+      >
         <span :class="{
           'zg-checkbox__input': true,
           'is-indeterminate': item.checkType === 1,
@@ -23,11 +32,35 @@
 </template>
 
 <script>
-// import { data } from '@/mock'
+
 export default {
   components: {},
   props: {
     levelDistance: {
+      type: [Number],
+      default: 10
+    },
+    showCheckbox: {
+      type: [Boolean],
+      default: true
+    },
+    itemHeight: {
+      type: [Number],
+      default: 26
+    },
+    currentNodeKey: {
+      type: [Number],
+      default: 10
+    },
+    defaultCheckedKeys: {
+      type: [Number],
+      default: 10
+    },
+    checkStrictly: {
+      type: [Number],
+      default: 10
+    },
+    checkOnClickNode: {
       type: [Number],
       default: 10,
     },
@@ -38,6 +71,7 @@ export default {
   },
   data() {
     return {
+      selectedData: []
     };
   },
   computed: {
@@ -97,13 +131,16 @@ export default {
         },
         1: () => {
           item.checkType = 2;
-
         },
         2: () => {
           item.checkType = 0;
         }
       }
-      type[item.checkType] && type[item.checkType]()
+      if(!type[item.checkType]){
+        item.checkType = 2;
+      } else {
+        type[item.checkType]();
+      }
       this.$emit('selectChange')
     },
   },
