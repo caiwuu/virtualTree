@@ -1,30 +1,28 @@
 <template>
-  <div class="zg-tree"
-       v-for="(item,index) in data"
-       :key="index"
-       :style="{paddingLeft:(item.level * levelDistance)+'px'}"
-       @click="collapseChange(item,index)">
-    <div class="zg-triangle">
-      <div class="zg-triangle-right" v-if="item.collapsed && !item.isLeaf"></div>
-      <div class="zg-triangle-bottom" v-if="!item.collapsed && !item.isLeaf"></div>
-    </div>
-    <label class="zg-checkbox" @click.stop="selectChange(item,index)">
-      <span :class="{
-        'zg-checkbox__input': true,
-        'is-indeterminate': item.checkType === 1,
-        'is-checked': item.checkType === 2
-      }">
-        <span class="zg-checkbox__inner"></span>
-      </span>
-    </label>
-    <div class="zg-content">
-      {{item.name}}
+  <div>
+    <div class="zg-tree" v-for="(item,index) in list" :key="index"
+      :style="{paddingLeft:(item.level * levelDistance)+'px'}" @click="collapseChange(item,index)">
+      <div class="zg-triangle">
+        <div class="zg-triangle-right" v-if="item.collapsed && !item.isLeaf"></div>
+        <div class="zg-triangle-bottom" v-if="!item.collapsed && !item.isLeaf"></div>
+      </div>
+      <label class="zg-checkbox" @click.stop="selectChange(item,index)">
+        <span :class="{
+          'zg-checkbox__input': true,
+          'is-indeterminate': item.checkType === 1,
+          'is-checked': item.checkType === 2
+        }">
+          <span class="zg-checkbox__inner"></span>
+        </span>
+      </label>
+      <div class="zg-content">
+        {{item.name}}
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { data } from '@/utils/data'
 // import { data } from '@/mock'
 export default {
   components: {},
@@ -32,14 +30,20 @@ export default {
     levelDistance: {
       type: [Number],
       default: 10,
+    },
+    sourceData: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
     return {
-      data: data
     };
   },
-  computed() {
+  computed: {
+    list() {
+      return this.sourceData
+    }
   },
   created() {
   },
@@ -68,13 +72,13 @@ export default {
      * @param pid
      * @returns {boolean}
      */
-    checkAll({level, id, pid}) {
-      this.data.forEach((e, i)=>{
-        if(id !== e.id){
-          if(e.level > level && e.pid === id){
+    checkAll({ level, id, pid }) {
+      this.data.forEach((e, i) => {
+        if (id !== e.id) {
+          if (e.level > level && e.pid === id) {
             e.checkType = 2;
-            if(!e.isLeaf) {
-              this.checkAll({level:++level, id:e.id, pid:e.pid})
+            if (!e.isLeaf) {
+              this.checkAll({ level: ++level, id: e.id, pid: e.pid })
             }
           }
         }
@@ -87,15 +91,15 @@ export default {
      */
     selectChange(item, index) {
       const type = {
-        0: ()=> {
+        0: () => {
           item.checkType = 2;
 
         },
-        1: ()=> {
+        1: () => {
           item.checkType = 2;
 
         },
-        2: ()=> {
+        2: () => {
           item.checkType = 0;
         }
       }
@@ -107,7 +111,6 @@ export default {
 </script>
 
 <style scoped>
-
 ul {
   padding: 0;
   margin: 0;
@@ -193,7 +196,7 @@ li {
   height: 14px;
   background-color: #fff;
   z-index: 1;
-  transition: border-color .25s cubic-bezier(.71,-.46,.29,1.46),background-color .25s cubic-bezier(.71,-.46,.29,1.46);
+  transition: border-color .25s cubic-bezier(.71, -.46, .29, 1.46), background-color .25s cubic-bezier(.71, -.46, .29, 1.46);
 }
 
 .zg-checkbox__inner:after {
@@ -237,5 +240,4 @@ li {
   right: 0;
   top: 5px;
 }
-
 </style>

@@ -1,23 +1,30 @@
+<!--
+ * @Author: caiwu
+ * @Description: 
+ * @CreateDate: 
+ * @LastEditor: 
+ * @LastEditTime: 2022-09-29 13:32:33
+-->
 <template>
-  <zg-tree @collapseChange="collapseChange"></zg-tree>
+  <demo></demo>
 </template>
 
 <script>
-import zgTree from './components/ZgTree/ZgTree.vue';
+import demo from '@/view/demo';
 export default {
   name: 'App',
   components: {
-    zgTree
+    demo
   },
   methods: {
-    collapseChange(item, index) {
-    },
+
   }
 }
 </script>
 
 <style>
-body,html {
+body,
+html {
   padding: 0;
   margin: 0;
 }
