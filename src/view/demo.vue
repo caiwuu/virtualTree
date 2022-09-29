@@ -3,29 +3,33 @@
  * @Description: 
  * @CreateDate: 
  * @LastEditor: 
- * @LastEditTime: 2022-09-29 13:32:44
+ * @LastEditTime: 2022-09-29 16:59:18
 -->
 <template>
-    <zg-tree :sourceData="data" @collapseChange="collapseChange"></zg-tree>
+    <div class="demo-container">
+        <virtual-tree :sourceData="data"></virtual-tree>
+    </div>
 </template>
 
 <script>
-import zgTree from '@/components/ZgTree/ZgTree.vue';
-console.log(zgTree);
+import VirtualTree from '@/components/TreeWraper/index.vue';
 import { data } from '@/mock'
 export default {
+    name: 'tree-demo',
     components: {
-        zgTree
+        VirtualTree
     },
     data() {
         return {
-            data: data.list
+            data: data
         }
-    },
-    methods: {
-        collapseChange(item, index) {
-            console.log(item, index);
-        },
     }
 }
 </script>
+<style>
+.demo-container {
+    background: #eee;
+    width: 800px;
+    margin: 100px auto;
+}
+</style>
