@@ -3,32 +3,41 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-09-29 16:59:44
+ * @LastEditTime: 2022-09-29 17:32:43
  */
 import Mock from 'mockjs'
 const data = []
 function genItems(startId, pid, count, level, parent) {
-  if (level === 4) return []
-  const res = Mock.mock({
-    [`list|1-${count}`]: [
-      {
-        'id|+1': startId,
-        pid: pid,
-        level: level,
-        'collapsed|1': false,
-        'isLeaf|1': true,
-        'data|1': {},
-      },
-    ],
-  }).list
-  parent.childCount = res.length
+  let res
+  if (level === 4) {
+    res = []
+  } else {
+    res = Mock.mock({
+      [`list|1-${count}`]: [
+        {
+          'id|+1': startId,
+          pid: pid,
+          level: level,
+          collapsed: function () {
+            return this.isLeaf
+          },
+          'isLeaf|1': true,
+          'data|1': {},
+        },
+      ],
+    }).list
+  }
   let index = res.length - 1
+  parent.childCount = res.length
   for (index; index >= 0; index--) {
     const element = res[index]
     element.name = pid === 0 ? element.id : parent.name + '-' + index
-    if (!element.collapsed) {
+    element.position = element.name
+    if (!element.isLeaf) {
       const result = genItems(startId + res.length, element.id, count, element.level + 1, element)
       res.splice(index + 1, 0, ...result)
+    } else {
+      // element.childCount = 0
     }
   }
   return res
