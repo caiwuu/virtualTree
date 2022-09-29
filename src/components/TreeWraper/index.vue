@@ -19,7 +19,7 @@ export default {
             default: () => ({
                 itemHeight: 40,
                 levelDistance: 20,
-                showCheckbox: false,
+                showCheckbox: true,
                 height: 400
             })
         }

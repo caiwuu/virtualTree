@@ -71,7 +71,7 @@ export default {
   },
   data() {
     return {
-      selectedData: []
+      selectedMap: {}
     };
   },
   computed: {
@@ -119,28 +119,72 @@ export default {
       })
     },
     /**
+     * 生成选中的map数据
+     * @param item
+     */
+    createSelectMap(item) {
+      if(this.selectedMap[item.id]){
+        delete this.selectedMap[item.id]
+      } else {
+        let arr = item.position + ''.split('-');
+        let state = true;
+        for (let i = 0; i < arr.length-1; i++) {
+          let map = this.selectedMap[parseInt(arr[i])];
+          if(map){
+            state = false;
+            let mapIndex = -1;
+            let has = map.find((e,i) => {
+              if(e.id === item.id){
+                mapIndex = i;
+              }
+              return e.id === item.id
+            });
+            if(!has){
+              map.push(item);
+            } else {
+              map.splice(mapIndex, 1);
+            }
+            break;
+          }
+        }
+        if(state){
+          this.selectedMap[item.id] = [];
+        }
+      }
+    },
+    /**
      * check选中事件
      * @param item
      * @param index
      */
     selectChange(item, index) {
-      const type = {
-        0: () => {
-          item.checkType = 2;
-
-        },
-        1: () => {
-          item.checkType = 2;
-        },
-        2: () => {
-          item.checkType = 0;
+      this.createSelectMap(item);
+      console.log(this.selectedMap)
+      this.sourceData.forEach((e)=>{
+        if(this.selectedMap[e.id] && this.selectedMap[e.id].length === 0){
+          e.checkType = 2;
+        } else if(this.selectedMap[e.id] && this.selectedMap[e.id].length !== 0) {
+          e.checkType = 1;
+        } else {
+          e.checkType = 0;
         }
-      }
-      if(!type[item.checkType]){
-        item.checkType = 2;
-      } else {
-        type[item.checkType]();
-      }
+      })
+      // const type = {
+      //   0: () => {
+      //     item.checkType = 2;
+      //   },
+      //   1: () => {
+      //     item.checkType = 2;
+      //   },
+      //   2: () => {
+      //     item.checkType = 0;
+      //   }
+      // }
+      // if(!type[item.checkType]){
+      //   item.checkType = 2;
+      // } else {
+      //   type[item.checkType]();
+      // }
       this.$emit('selectChange')
     },
   },

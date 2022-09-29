@@ -1,8 +1,8 @@
 <!--
  * @Author: caiwu
- * @Description: 
- * @CreateDate: 
- * @LastEditor: 
+ * @Description:
+ * @CreateDate:
+ * @LastEditor:
  * @LastEditTime: 2022-09-29 16:59:18
 -->
 <template>
@@ -14,6 +14,7 @@
 <script>
 import VirtualTree from '@/components/TreeWraper/index.vue';
 import { data } from '@/mock'
+// import { data } from '@/utils/data.js'
 export default {
     name: 'tree-demo',
     components: {
