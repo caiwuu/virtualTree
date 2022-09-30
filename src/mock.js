@@ -31,8 +31,8 @@ function genItems(startId, pid, count, level, parent) {
   parent.childCount = res.length
   for (index; index >= 0; index--) {
     const element = res[index]
-    element.name = pid === 0 ? element.id : parent.name + '-' + index
-    element.position = element.name
+    element.name = pid === 0 ? element.id + '' : parent.name + '-' + index;
+    element.position =  pid === 0 ? element.id + '' : parent.position + '-' + element.id;
     if (!element.isLeaf) {
       const result = genItems(startId + res.length, element.id, count, element.level + 1, element)
       res.splice(index + 1, 0, ...result)

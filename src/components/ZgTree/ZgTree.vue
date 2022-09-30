@@ -126,29 +126,40 @@ export default {
       if(this.selectedMap[item.id]){
         delete this.selectedMap[item.id]
       } else {
-        let arr = item.position + ''.split('-');
+        for (const itemElement in this.selectedMap) {
+          console.log(this.selectedMap[itemElement].node.position)
+          console.log(this.selectedMap[itemElement].node.position.slice(0,item.position.length))
+          console.log(item.position)
+          if(this.selectedMap[itemElement].node.level > item.level && this.selectedMap[itemElement].node.position.slice(0,item.position.length) === item.position){
+            delete this.selectedMap[itemElement];
+          }
+        }
+        let arr = item.position.split('-');
         let state = true;
         for (let i = 0; i < arr.length-1; i++) {
           let map = this.selectedMap[parseInt(arr[i])];
           if(map){
             state = false;
             let mapIndex = -1;
-            let has = map.find((e,i) => {
+            let has = map.exclude.find((e,i) => {
               if(e.id === item.id){
                 mapIndex = i;
               }
               return e.id === item.id
             });
             if(!has){
-              map.push(item);
+              map.exclude.push(item);
             } else {
-              map.splice(mapIndex, 1);
+              map.exclude.splice(mapIndex, 1);
             }
             break;
           }
         }
         if(state){
-          this.selectedMap[item.id] = [];
+          this.selectedMap[item.id] = {
+            node: item,
+            exclude: []
+          };
         }
       }
     },
@@ -159,32 +170,43 @@ export default {
      */
     selectChange(item, index) {
       this.createSelectMap(item);
-      console.log(this.selectedMap)
+
+
       this.sourceData.forEach((e)=>{
-        if(this.selectedMap[e.id] && this.selectedMap[e.id].length === 0){
-          e.checkType = 2;
-        } else if(this.selectedMap[e.id] && this.selectedMap[e.id].length !== 0) {
-          e.checkType = 1;
-        } else {
+        if(Object.keys(this.selectedMap).length === 0) {
           e.checkType = 0;
+        } else {
+          for (const key in this.selectedMap) {
+            if(e.id+'' === key){
+              if(this.selectedMap[key].exclude.length === 0){
+                e.checkType = 2;
+                break;
+              }
+              if(this.selectedMap[key].exclude.length !== 0 && this.selectedMap[key].exclude.length !== e.childCount){
+                e.checkType = 1;
+                break;
+              }
+              e.checkType = 0;
+            } else {
+              // todo
+              let arr = e.position + ''.split('-');
+
+              for (let i = 0; i < arr.length-1; i++) {
+                if(this.selectedMap[arr[i]]?.exclude.length === 0){
+                  e.checkType = 2;
+                  break;
+                }
+                if(this.selectedMap[arr[i]]?.exclude.length !== 0 && this.selectedMap[key]?.exclude.length !== e.childCount){
+                  e.checkType = 1;
+                  break;
+                }
+              }
+
+              e.checkType = 0;
+            }
+          }
         }
       })
-      // const type = {
-      //   0: () => {
-      //     item.checkType = 2;
-      //   },
-      //   1: () => {
-      //     item.checkType = 2;
-      //   },
-      //   2: () => {
-      //     item.checkType = 0;
-      //   }
-      // }
-      // if(!type[item.checkType]){
-      //   item.checkType = 2;
-      // } else {
-      //   type[item.checkType]();
-      // }
       this.$emit('selectChange')
     },
   },
