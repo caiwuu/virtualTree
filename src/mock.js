@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-09-29 17:32:43
+ * @LastEditTime: 2022-09-29 17:45:17
  */
 import Mock from 'mockjs'
 const data = []
@@ -37,7 +37,7 @@ function genItems(startId, pid, count, level, parent) {
       const result = genItems(startId + res.length, element.id, count, element.level + 1, element)
       res.splice(index + 1, 0, ...result)
     } else {
-      // element.childCount = 0
+      element.childCount = 0
     }
   }
   return res
