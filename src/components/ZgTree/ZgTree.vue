@@ -71,7 +71,12 @@ export default {
   },
   data() {
     return {
-      selectedMap: {}
+      selectedMap: {},
+      checkType:Object.freeze({
+        UNCHECKED:0,
+        INDETERMINATE:1,
+        CHECKED:2
+      })
     };
   },
   computed: {
@@ -110,7 +115,7 @@ export default {
       this.data.forEach((e, i) => {
         if (id !== e.id) {
           if (e.level > level && e.pid === id) {
-            e.checkType = 2;
+            e.checkType = this.checkType.CHECKED;
             if (!e.isLeaf) {
               this.checkAll({ level: ++level, id: e.id, pid: e.pid })
             }
@@ -166,27 +171,29 @@ export default {
      */
     noCheckParents(item) {
       let nodeList = this.sourceData.filter((e) => {
-        return item.pid === e.pid && e.checkType === 0;
+        return item.pid === e.pid && e.checkType !== this.checkType.INDETERMINATE && e.checkType !== this.checkType.CHECKED;
       });
       let pNode = this.sourceData.find((e) => {
-        return item.pid === e.id;
+        return item.pid + '' === e.id + '';
       });
       if(pNode && pNode.childCount) {
         if(pNode.childCount === nodeList.length) {
           for (let i = 0; i < this.sourceData.length; i++) {
             if(this.sourceData[i].id === pNode.id && item.level !== 0) {
-              this.sourceData[i].checkType = 0;
-              this.checkParents(this.sourceData[i]);
+              this.sourceData[i].checkType = this.checkType.UNCHECKED;
+              this.noCheckParents(this.sourceData[i]);
               break;
             }
           }
         } else {
           let arr = item.position.split('-');
+          console.log(arr)
           if(arr.length > 1){
             for (let i = 0; i < arr.length - 1 ; i++) {
               for (let j = 0; j < this.sourceData.length; j++) {
-                if(arr[i] + '' === this.sourceData[j].id + '' && pNode.level !== 0) {
-                  this.sourceData[j].checkType = 1;
+                console.log(arr[i],this.sourceData[j].id + '',arr[i] + '' === this.sourceData[j].id + '')
+                if(arr[i] + '' === this.sourceData[j].id + '' && item.level !== 0) {
+                  this.sourceData[j].checkType = this.checkType.INDETERMINATE;
                   break;
                 }
               }
@@ -201,31 +208,27 @@ export default {
      */
     checkParents(item) {
       let nodeList = this.sourceData.filter((e) => {
-        return item.pid === e.pid && e.checkType === 2;
+        return item.pid === e.pid && e.checkType === this.checkType.CHECKED;
       });
-      console.log(nodeList)
       let pNode = this.sourceData.find((e) => {
-        return item.pid === e.id;
+        return item.pid + '' === e.id + '';
       });
-      console.log(pNode)
       if(pNode && pNode.childCount) {
         if(pNode.childCount === nodeList.length) {
           for (let i = 0; i < this.sourceData.length; i++) {
             if(this.sourceData[i].id === pNode.id && item.level !== 0) {
-              this.sourceData[i].checkType = 2;
+              this.sourceData[i].checkType = this.checkType.CHECKED;
               this.checkParents(this.sourceData[i]);
               break;
             }
           }
         } else {
           let arr = item.position.split('-');
-          console.log(arr)
           if(arr.length > 1){
             for (let i = 0; i < arr.length - 1 ; i++) {
               for (let j = 0; j < this.sourceData.length; j++) {
-                console.log(arr[i] + '' === this.sourceData[j].id + '')
-                if(arr[i] + '' === this.sourceData[j].id + '' && pNode.level !== 0) {
-                  this.sourceData[j].checkType = 1;
+                if(arr[i] + '' === this.sourceData[j].id + '' && item.level !== 0) {
+                  this.sourceData[j].checkType = this.checkType.INDETERMINATE;
                   break;
                 }
               }
@@ -239,13 +242,89 @@ export default {
      * @param item
      * @param checkType
      */
-    checkChild(item, checkType) {
-      for (let i = 0; i < this.sourceData.length; i++) {
-        if(item.level < this.sourceData[i].level){
-          if(this.sourceData[i].position.slice(0,item.position.length + 1) === item.position + '-') {
-            this.sourceData[i].checkType = checkType;
+    checkChild(item, checkType, sourceData) {
+      for (let i = 0; i < sourceData.length; i++) {
+        if(item.level < sourceData[i].level){
+          if(sourceData[i].position.slice(0,item.position.length + 1) === item.position + '-') {
+            sourceData[i].checkType = checkType;
           }
         }
+      }
+    },
+    /**
+     * 根据selectMap选中
+     * @param map
+     */
+    checkBySelectedMap(map, sourceData) {
+      Object.keys(map).forEach((key) => {
+        console.log(map[key])
+        if(map[key].exclude.length === 0) {
+          for (let i = 0; i < sourceData.length; i++) {
+            if(key + '' === sourceData[i].id + ''){
+              sourceData[i].checkType = this.checkType.CHECKED;
+              this.checkChild(sourceData[i], this.checkType.CHECKED, sourceData);
+              this.checkParents(map[key].node);
+              continue;
+            }
+          }
+        }
+        if(map[key].exclude.length !== 0 ) {
+          if(map[key].node.childCount === map[key].exclude.length) {
+            for (let i = 0; i < sourceData.length; i++) {
+              if(key + '' === sourceData[i].id + ''){
+                sourceData[i].checkType = this.checkType.UNCHECKED;
+                this.checkChild(sourceData[i], this.checkType.UNCHECKED, sourceData);
+                this.noCheckParents(map[key].node);
+                continue;
+              }
+            }
+          }
+          if(map[key].node.childCount !== map[key].exclude.length) {
+            for (let i = 0; i < sourceData.length; i++) {
+              if(key + '' === sourceData[i].id + ''){
+                sourceData[i].checkType = this.checkType.INDETERMINATE;
+                this.checkChild(sourceData[i], this.checkType.INDETERMINATE, sourceData);
+                this.checkParents(map[key].node);
+                continue;
+              }
+            }
+          }
+        }
+        // this.checkType = this.checkType.UNCHECKED;
+      })
+
+    },
+    /**
+     * 根据当前点击项选中
+     * @param item
+     * @param index
+     */
+    selectByClick(item) {
+      if(item.checkType){
+        switch (item.checkType) {
+          case 0:
+            item.checkType = this.checkType.CHECKED;
+            this.checkChild(item, this.checkType.CHECKED, this.sourceData);
+            this.checkParents(item);
+            break;
+          case 1:
+            item.checkType = this.checkType.CHECKED;
+            this.checkChild(item, this.checkType.CHECKED, this.sourceData);
+            this.checkParents(item);
+            break;
+          case 2:
+            item.checkType = this.checkType.UNCHECKED;
+            this.checkChild(item, this.checkType.UNCHECKED, this.sourceData);
+            this.noCheckParents(item)
+            break;
+          default :
+            break;
+        }
+      } else {
+        item.checkType = this.checkType.CHECKED;
+        this.checkChild(item, 2, this.sourceData);
+        this.checkParents(item);
+        return false;
       }
     },
     /**
@@ -254,28 +333,10 @@ export default {
      * @param index
      */
     selectChange(item, index) {
-      if(item.checkType){
-        if(item.checkType === 0){
-          item.checkType = 2;
-          this.checkParents(item);
-          this.checkChild(item, 2);
-        }
-        if(item.checkType === 1){
-          item.checkType = 2;
-          this.checkParents(item);
-          this.checkChild(item, 2);
-        }
-        if(item.checkType === 2){
-          item.checkType = 0;
-          this.noCheckParents(item)
-          this.checkChild(item, 0);
-        }
-      } else {
-        item.checkType = 2;
-        this.checkParents(item);
-        this.checkChild(item, 2);
-      }
       this.createSelectMap(item);
+      console.log(this.selectedMap)
+      // this.checkBySelectedMap(this.selectedMap, this.sourceData);
+      this.selectByClick(item);
       this.$emit('selectChange')
     },
   },
