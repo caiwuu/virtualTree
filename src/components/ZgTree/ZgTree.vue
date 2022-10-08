@@ -127,10 +127,7 @@ export default {
         delete this.selectedMap[item.id]
       } else {
         for (const itemElement in this.selectedMap) {
-          console.log(this.selectedMap[itemElement].node.position)
-          console.log(this.selectedMap[itemElement].node.position.slice(0,item.position.length))
-          console.log(item.position)
-          if(this.selectedMap[itemElement].node.level > item.level && this.selectedMap[itemElement].node.position.slice(0,item.position.length) === item.position){
+          if(this.selectedMap[itemElement].node.level > item.level && this.selectedMap[itemElement].node.position.slice(0,item.position.length + 1) === item.position + '-'){
             delete this.selectedMap[itemElement];
           }
         }
@@ -164,49 +161,121 @@ export default {
       }
     },
     /**
+     * 取消选中上级
+     * @param item
+     */
+    noCheckParents(item) {
+      let nodeList = this.sourceData.filter((e) => {
+        return item.pid === e.pid && e.checkType === 0;
+      });
+      let pNode = this.sourceData.find((e) => {
+        return item.pid === e.id;
+      });
+      if(pNode && pNode.childCount) {
+        if(pNode.childCount === nodeList.length) {
+          for (let i = 0; i < this.sourceData.length; i++) {
+            if(this.sourceData[i].id === pNode.id && item.level !== 0) {
+              this.sourceData[i].checkType = 0;
+              this.checkParents(this.sourceData[i]);
+              break;
+            }
+          }
+        } else {
+          let arr = item.position.split('-');
+          if(arr.length > 1){
+            for (let i = 0; i < arr.length - 1 ; i++) {
+              for (let j = 0; j < this.sourceData.length; j++) {
+                if(arr[i] + '' === this.sourceData[j].id + '' && pNode.level !== 0) {
+                  this.sourceData[j].checkType = 1;
+                  break;
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    /**
+     * 选中上级
+     * @param item
+     */
+    checkParents(item) {
+      let nodeList = this.sourceData.filter((e) => {
+        return item.pid === e.pid && e.checkType === 2;
+      });
+      console.log(nodeList)
+      let pNode = this.sourceData.find((e) => {
+        return item.pid === e.id;
+      });
+      console.log(pNode)
+      if(pNode && pNode.childCount) {
+        if(pNode.childCount === nodeList.length) {
+          for (let i = 0; i < this.sourceData.length; i++) {
+            if(this.sourceData[i].id === pNode.id && item.level !== 0) {
+              this.sourceData[i].checkType = 2;
+              this.checkParents(this.sourceData[i]);
+              break;
+            }
+          }
+        } else {
+          let arr = item.position.split('-');
+          console.log(arr)
+          if(arr.length > 1){
+            for (let i = 0; i < arr.length - 1 ; i++) {
+              for (let j = 0; j < this.sourceData.length; j++) {
+                console.log(arr[i] + '' === this.sourceData[j].id + '')
+                if(arr[i] + '' === this.sourceData[j].id + '' && pNode.level !== 0) {
+                  this.sourceData[j].checkType = 1;
+                  break;
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    /**
+     * 选中孩子
+     * @param item
+     * @param checkType
+     */
+    checkChild(item, checkType) {
+      for (let i = 0; i < this.sourceData.length; i++) {
+        if(item.level < this.sourceData[i].level){
+          if(this.sourceData[i].position.slice(0,item.position.length + 1) === item.position + '-') {
+            this.sourceData[i].checkType = checkType;
+          }
+        }
+      }
+    },
+    /**
      * check选中事件
      * @param item
      * @param index
      */
     selectChange(item, index) {
-      this.createSelectMap(item);
-
-
-      this.sourceData.forEach((e)=>{
-        if(Object.keys(this.selectedMap).length === 0) {
-          e.checkType = 0;
-        } else {
-          for (const key in this.selectedMap) {
-            if(e.id+'' === key){
-              if(this.selectedMap[key].exclude.length === 0){
-                e.checkType = 2;
-                break;
-              }
-              if(this.selectedMap[key].exclude.length !== 0 && this.selectedMap[key].exclude.length !== e.childCount){
-                e.checkType = 1;
-                break;
-              }
-              e.checkType = 0;
-            } else {
-              // todo
-              let arr = e.position + ''.split('-');
-
-              for (let i = 0; i < arr.length-1; i++) {
-                if(this.selectedMap[arr[i]]?.exclude.length === 0){
-                  e.checkType = 2;
-                  break;
-                }
-                if(this.selectedMap[arr[i]]?.exclude.length !== 0 && this.selectedMap[key]?.exclude.length !== e.childCount){
-                  e.checkType = 1;
-                  break;
-                }
-              }
-
-              e.checkType = 0;
-            }
-          }
+      if(item.checkType){
+        if(item.checkType === 0){
+          item.checkType = 2;
+          this.checkParents(item);
+          this.checkChild(item, 2);
         }
-      })
+        if(item.checkType === 1){
+          item.checkType = 2;
+          this.checkParents(item);
+          this.checkChild(item, 2);
+        }
+        if(item.checkType === 2){
+          item.checkType = 0;
+          this.noCheckParents(item)
+          this.checkChild(item, 0);
+        }
+      } else {
+        item.checkType = 2;
+        this.checkParents(item);
+        this.checkChild(item, 2);
+      }
+      this.createSelectMap(item);
       this.$emit('selectChange')
     },
   },

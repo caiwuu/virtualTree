@@ -13,8 +13,8 @@
 
 <script>
 import VirtualTree from '@/components/TreeWraper/index.vue';
-import { data } from '@/mock'
-// import { data } from '@/utils/data.js'
+// import { data } from '@/mock'
+import { data } from '@/utils/data.js'
 export default {
     name: 'tree-demo',
     components: {
