@@ -238,6 +238,42 @@ export default {
       }
     },
     /**
+     * 选中带有exclude上级
+     * @param item
+     */
+    checkWithExcludeParents(item) {
+      let sourceData = this.sourceData;
+      for (let i = 0; i < sourceData.length; i++) {
+        if(item.level < sourceData[i].level){
+          if(sourceData[i].position.slice(0,item.position.length + 1) === item.position + '-') {
+            sourceData[i].checkType = this.checkType.CHECKED;
+          }
+        }
+      }
+      // let list = this.selectedMap[item.id].exclude;
+      // for (let i = 0; i < list.length; i++) {
+      //     for (let j = 0; j < sourceData.length; j++) {
+      //       // if(list[i].id === sourceData[j]){
+      //       //   sourceData[i].checkType = this.checkType.UNCHECKED;
+      //       //   break;
+      //       // }
+      //       let arr = item.position.split('-');
+      //         for (let z = 0; z < arr.length - 1 ; z++) {
+      //             if(arr[z] + '' === this.sourceData[j].id + '' && item.level !== 0) {
+      //               this.sourceData[j].checkType = this.checkType.INDETERMINATE;
+      //               break;
+      //             }
+      //         }
+      //
+      //     }
+      //   }
+      // if(sourceData[i].level < list[i].level) {
+      //   if(arr[list[i].level] === sourceData[i].position[list[i].level]) {
+      //     sourceData[i].checkType = this.checkType.UNCHECKED;
+      //   }
+      // }
+      },
+    /**
      * 选中孩子
      * @param item
      * @param checkType
@@ -262,83 +298,68 @@ export default {
           for (let i = 0; i < sourceData.length; i++) {
             if(key + '' === sourceData[i].id + ''){
               sourceData[i].checkType = this.checkType.CHECKED;
-              this.checkChild(sourceData[i], this.checkType.CHECKED, sourceData);
               this.checkParents(map[key].node);
+              this.checkChild(sourceData[i], this.checkType.CHECKED, sourceData);
               continue;
             }
           }
         }
         if(map[key].exclude.length !== 0 ) {
           if(map[key].node.childCount === map[key].exclude.length) {
-            for (let i = 0; i < sourceData.length; i++) {
-              if(key + '' === sourceData[i].id + ''){
-                sourceData[i].checkType = this.checkType.UNCHECKED;
-                this.checkChild(sourceData[i], this.checkType.UNCHECKED, sourceData);
-                this.noCheckParents(map[key].node);
-                continue;
-              }
-            }
           }
           if(map[key].node.childCount !== map[key].exclude.length) {
             for (let i = 0; i < sourceData.length; i++) {
-              if(key + '' === sourceData[i].id + ''){
-                sourceData[i].checkType = this.checkType.INDETERMINATE;
-                this.checkChild(sourceData[i], this.checkType.INDETERMINATE, sourceData);
-                this.checkParents(map[key].node);
+              if(key + '' === sourceData[i].id + '') {
+                sourceData[i].checkType = this.checkType.CHECKED;
+                this.checkWithExcludeParents(map[key].node);
+                this.checkChild(sourceData[i], this.checkType.UNCHECKED, sourceData);
                 continue;
               }
             }
           }
         }
-        // this.checkType = this.checkType.UNCHECKED;
       })
 
     },
     /**
      * 根据当前点击项选中
      * @param item
-     * @param index
      */
     selectByClick(item) {
-      if(item.checkType){
-        switch (item.checkType) {
-          case 0:
-            item.checkType = this.checkType.CHECKED;
-            this.checkChild(item, this.checkType.CHECKED, this.sourceData);
-            this.checkParents(item);
-            break;
-          case 1:
-            item.checkType = this.checkType.CHECKED;
-            this.checkChild(item, this.checkType.CHECKED, this.sourceData);
-            this.checkParents(item);
-            break;
-          case 2:
-            item.checkType = this.checkType.UNCHECKED;
-            this.checkChild(item, this.checkType.UNCHECKED, this.sourceData);
-            this.noCheckParents(item)
-            break;
-          default :
-            break;
-        }
-      } else {
-        item.checkType = this.checkType.CHECKED;
-        this.checkChild(item, 2, this.sourceData);
-        this.checkParents(item);
-        return false;
+      switch (item.checkType) {
+        case 0:
+          item.checkType = this.checkType.CHECKED;
+          this.checkParents(item);
+          this.checkChild(item, this.checkType.CHECKED, this.sourceData);
+          break;
+        case 1:
+          item.checkType = this.checkType.CHECKED;
+          this.checkParents(item);
+          this.checkChild(item, this.checkType.CHECKED, this.sourceData);
+          break;
+        case 2:
+          item.checkType = this.checkType.UNCHECKED;
+          this.noCheckParents(item)
+          this.checkChild(item, this.checkType.UNCHECKED, this.sourceData);
+          break;
+        default :
+          break;
       }
     },
     /**
      * check选中事件
      * @param item
-     * @param index
      */
-    selectChange(item, index) {
+    selectChange(item) {
+      for (let i = 0; i < this.sourceData.length; i++) {
+        this.sourceData[i].checkType = this.checkType.UNCHECKED;
+      }
       this.createSelectMap(item);
       console.log(this.selectedMap)
-      // this.checkBySelectedMap(this.selectedMap, this.sourceData);
-      this.selectByClick(item);
+      this.checkBySelectedMap(this.selectedMap, this.sourceData);
+      // this.selectByClick(item);
       this.$emit('selectChange')
-    },
+    }
   },
 };
 </script>
