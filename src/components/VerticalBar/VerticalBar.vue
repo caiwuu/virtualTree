@@ -1,120 +1,94 @@
 <template>
-  <!-- 虚拟滚动整体 -->
-  <div class="VerticalBar" @click="handleVerticalBarClick" ref="VerticalBar">
-    <!-- 虚拟滚动条 -->
+  <div class="list" @scroll="scrollHandle" ref="list">
     <div
-      class="bar"
-      :style="{
-        height: height + 'px',
-        top: top + 'px',
-      }"
-      @click="handleBarClick"
-      @mousedown="handleMouseDown"
-    ></div>
+      class="item"
+      v-for="(item, index) in renderList"
+      :key="index"
+      :style="`height:${itemHeight}px;line-height:${itemHeight}px;transform:translateY(${top}px)`"
+    >
+      {{ item }}
+    </div>
   </div>
 </template>
 <script>
+import throttle from "@/utils/throttle";
 export default {
-  name: "VerticalBar",
+  name: "List",
+  props: {
+    list: {
+      // 完整列表
+      type: Array,
+      require: true,
+    },
+    itemHeight: {
+      // 每一项的高度
+      type: Number,
+      default: 599,
+    },
+    // 冗余条数，默认4条
+    redundance:{
+      type: Number,
+      default: 4
+    }
+  },
   data() {
     return {
-      mouseDownFlag: false, //是否鼠标滑动
-      mouseDownY: 0, // 移动距离
-      topBackUp: 0, // 距离顶部的距离
+      renderList: [], // 需要渲染的列表
+      start: 0, // 开始渲染的位置
+      volume: 0, // 页面的容积:能装下多少个节点
+      top: 0,
+      scroll, // 用于初始化节流
     };
   },
-  props: {
-    height: {
-      type: [String, Number],
-      default: 0,
-    },
-    top: {
-      type: [String, Number],
-      top: 0,
+  watch: {
+    list() {
+      // 计算自身高度
+      const cHeight = this.$el.offsetHeight;
+      // 计算页面能容纳下几个节点并且设置{{redundance}}个节点作为冗余
+      this.volume = Math.ceil(cHeight / this.itemHeight) + this.redundance;
+      // 设置要渲染的列表 设置成能够容纳下的最大元素个数
+      this.renderList = this.list.slice(0, this.volume);
     },
   },
+  mounted() {
+    // 初始化节流函数 最短50毫秒触发一次
+    this.scroll = throttle(this.onScroll, 50);
+  },
   methods: {
-    handleBarClick(e) {
-      e.stopPropagation();
-      return false;
+    scrollHandle() {
+      this.scroll();
     },
-    // 虚拟滚动轨道被点击时触发滚动条的位移，位移量为滚动条的中部移动到鼠标位置
-    handleVerticalBarClick(e) {
-      console.log("滚动轨道被点击", e.clientY);
-      // 计算当前滚动条位置
-      const top = e.clientY - this.height / 2;
-      this.setTop(top);
+    onScroll() {
+      // scrollTop常量记录当前滚动的高度
+      const scrollTop = this.$refs.list.scrollTop;
+      const start = this.getCurStart(scrollTop);
+      // 对比上一次的开始节点 比较是否发生变化，发生变化后便重新渲染列表
+      if (this.start != start) {
+        // 在这需要获得一个可以被itemHeight整除的数来作为item的偏移量
+        const offsetY = scrollTop - (scrollTop % this.itemHeight);
+        // 使用slice拿到需要渲染的那一部分
+        this.renderList = this.list.slice(start, this.start + this.volume);
+        // 这里的top用于设置translateY  transform:translateY(${top}px)
+        this.top = offsetY;
+      }
+      this.start = start;
     },
-    handleMouseDown(e) {
-      //左0，中1，右2，目前阻断中键和右键，后期考虑可添加右键菜单
-      console.log("鼠标", e.button);
-      if (e.button !== 0) {
-        return;
-      }
-      console.log("e.clientY", e.clientY);
-      this.mouseDownFlag = true;
-      this.mouseDownY = e.clientY;
-      this.topBackUp = this.top;
-      // 在鼠标按下时加入监听事件
-      // 监听鼠标滑动事件
-      document.addEventListener("mousemove", this.handleMouseMove);
-      document.addEventListener("mouseup", this.handleMouseUp);
-    },
-    // 鼠标移动事件
-    handleMouseMove(e) {
-      e.stopPropagation();
-      // 阻断异常
-      if (!this.mouseDownFlag) {
-        return;
-      }
-
-      // 计算top值
-      const top = this.topBackUp + e.clientY - this.mouseDownY;
-      console.log("鼠标移动事件", top);
-      this.setTop(top);
-    },
-    // 鼠标松开事件
-    handleMouseUp() {
-      console.log("鼠标松开事件");
-      this.mouseDownFlag = false;
-      document.removeEventListener("mousemove", this.handleMouseMove);
-      document.removeEventListener("mouseup", this.handleMouseUp);
-    },
-    // 设置距离顶部距离
-    setTop(top) {
-      // 方位计算
-      // topMax计算bar在最上方时底部距离整个滚动条单元底部的距离，也是最大滑动距离
-      const topMax = this.$refs["VerticalBar"].clientHeight - this.height;
-      // top小于0，意味着滚动条的中心位置位移到鼠标位置时，滚动条高度会超出滚动轨道，所以直接将滚动条置顶
-      if (top <= 0) {
-        top = 0;
-      }
-      // 同理，将滚动条置底
-      else if (top > topMax) {
-        top = topMax;
-      }
-      console.log("top", top);
-      // 值改变时，通知主组件变更
-      if (top != this.top) {
-        this.$emit("on-top-change", top);
-      }
+    getCurStart(scrollTop) {
+      // 没了多少个
+      return Math.floor(scrollTop / this.itemHeight);
     },
   },
 };
 </script>
-<style>
-.VerticalBar {
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  width: 5px;
-  height: 100%;
-  background: blue;
+<style scoped>
+.list {
+  height: 100vh;
+  overflow: scroll;
 }
-.bar {
-  position: absolute;
+.item {
+  text-align: center;
   width: 100%;
-  background: red;
-  border-radius: 4px;
+  box-sizing: border-box;
+  border-bottom: 1px solid lightgray;
 }
 </style>
