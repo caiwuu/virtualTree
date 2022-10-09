@@ -105,25 +105,6 @@ export default {
       this.$emit('collapseChange')
     },
     /**
-     * tree行点击事件
-     * @param level
-     * @param id
-     * @param pid
-     * @returns {boolean}
-     */
-    checkAll({ level, id, pid }) {
-      this.data.forEach((e, i) => {
-        if (id !== e.id) {
-          if (e.level > level && e.pid === id) {
-            e.checkType = this.checkType.CHECKED;
-            if (!e.isLeaf) {
-              this.checkAll({ level: ++level, id: e.id, pid: e.pid })
-            }
-          }
-        }
-      })
-    },
-    /**
      * 生成选中的map数据
      * @param item
      */
@@ -144,10 +125,12 @@ export default {
             state = false;
             let mapIndex = -1;
             let has = map.exclude.find((e,i) => {
-              if(e.id === item.id){
+              // || item.level < e.level && e.position.slice(0, item.position.length + 1) === item.position + '-'
+              let state = item.id === e.id;
+              if(state){
                 mapIndex = i;
               }
-              return e.id === item.id
+              return state;
             });
             if(!has){
               map.exclude.push(item);
@@ -238,42 +221,6 @@ export default {
       }
     },
     /**
-     * 选中带有exclude上级
-     * @param item
-     */
-    checkWithExcludeParents(item) {
-      let sourceData = this.sourceData;
-      for (let i = 0; i < sourceData.length; i++) {
-        if(item.level < sourceData[i].level){
-          if(sourceData[i].position.slice(0,item.position.length + 1) === item.position + '-') {
-            sourceData[i].checkType = this.checkType.CHECKED;
-          }
-        }
-      }
-      // let list = this.selectedMap[item.id].exclude;
-      // for (let i = 0; i < list.length; i++) {
-      //     for (let j = 0; j < sourceData.length; j++) {
-      //       // if(list[i].id === sourceData[j]){
-      //       //   sourceData[i].checkType = this.checkType.UNCHECKED;
-      //       //   break;
-      //       // }
-      //       let arr = item.position.split('-');
-      //         for (let z = 0; z < arr.length - 1 ; z++) {
-      //             if(arr[z] + '' === this.sourceData[j].id + '' && item.level !== 0) {
-      //               this.sourceData[j].checkType = this.checkType.INDETERMINATE;
-      //               break;
-      //             }
-      //         }
-      //
-      //     }
-      //   }
-      // if(sourceData[i].level < list[i].level) {
-      //   if(arr[list[i].level] === sourceData[i].position[list[i].level]) {
-      //     sourceData[i].checkType = this.checkType.UNCHECKED;
-      //   }
-      // }
-      },
-    /**
      * 选中孩子
      * @param item
      * @param checkType
@@ -293,30 +240,23 @@ export default {
      */
     checkBySelectedMap(map, sourceData) {
       Object.keys(map).forEach((key) => {
-        console.log(map[key])
-        if(map[key].exclude.length === 0) {
-          for (let i = 0; i < sourceData.length; i++) {
-            if(key + '' === sourceData[i].id + ''){
-              sourceData[i].checkType = this.checkType.CHECKED;
-              this.checkParents(map[key].node);
-              this.checkChild(sourceData[i], this.checkType.CHECKED, sourceData);
-              continue;
-            }
+        for (let i = 0; i < sourceData.length; i++) {
+          if(key + '' === sourceData[i].id + ''){
+            sourceData[i].checkType = this.checkType.CHECKED;
+            this.checkParents(map[key].node);
+            this.checkChild(sourceData[i], this.checkType.CHECKED, sourceData);
           }
         }
         if(map[key].exclude.length !== 0 ) {
-          if(map[key].node.childCount === map[key].exclude.length) {
-          }
-          if(map[key].node.childCount !== map[key].exclude.length) {
+          map[key].exclude.forEach((e) => {
             for (let i = 0; i < sourceData.length; i++) {
-              if(key + '' === sourceData[i].id + '') {
-                sourceData[i].checkType = this.checkType.CHECKED;
-                this.checkWithExcludeParents(map[key].node);
+              if(e.id + '' === sourceData[i].id + '') {
+                sourceData[i].checkType = this.checkType.UNCHECKED;
+                this.noCheckParents(e);
                 this.checkChild(sourceData[i], this.checkType.UNCHECKED, sourceData);
-                continue;
               }
             }
-          }
+          })
         }
       })
 
