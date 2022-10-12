@@ -48,3 +48,6 @@ if (this.end + this.oneClientRowSize > this.pageSize * this.pageNo) {
 }
 ```
 
+### TODO
+
+模拟滚动条：滚动事件还是用原生，但是原生UI表现的太真实了，非全量的时候数据一页一页从服务端来的，所以滚动条会非连续的长度变化，我们需要伪装一个滚动条，模拟滚动进度。
