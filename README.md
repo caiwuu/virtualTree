@@ -25,3 +25,24 @@
 ### 原理图
 
 ![image-20221012170037027](https://cdn.jsdelivr.net/gh/caiwuu/image/image-20221012170037027.png)
+
+```js
+const forwardCriticalPoint = Math.ceil((this.start + this.end) / 2) // 指针前进临界点
+const backCriticalPoint = forwardCriticalPoint - this.oneClientRowSize // 指针后退临界点
+if (e.target.scrollTop > forwardCriticalPoint * this.rowHeight) {
+    this.start += this.oneClientRowSize
+    this.end += this.oneClientRowSize
+    this.rangeChange()
+}
+if (e.target.scrollTop < backCriticalPoint * this.rowHeight && this.start > 0) {
+    this.start -= this.oneClientRowSize
+    this.end -= this.oneClientRowSize
+    this.rangeChange()
+}
+if (this.end + this.oneClientRowSize > this.pageSize * this.pageNo) {
+    // 需要增加数据
+    this.pageNo++
+    this.eventHandle['pageNoChange'](this.pageNo, this.pageSize)
+}
+```
+
