@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-09-30 17:31:33
+ * @LastEditTime: 2022-10-13 10:59:51
  */
 export default class {
   start = 0
@@ -11,12 +11,13 @@ export default class {
   translateY = 0
   oneClientRowSize = 0
   eventHandle = {}
+  pageNo = 1
   constructor(config) {
-    const { container, pageSize, rowHeight, pageNo } = config
+    const { container, rowHeight, sectionSize, isStatic } = config
     this.container = container
-    this.pageSize = pageSize
-    this.pageNo = pageNo
     this.rowHeight = rowHeight
+    this.sectionSize = sectionSize
+    this.isStatic = isStatic
   }
   on(eventName, fn) {
     this.eventHandle[eventName] = fn
@@ -25,36 +26,44 @@ export default class {
   run() {
     this.initContainerDom()
     // 校验启动参数
-    this.oneClientRowSize = Math.ceil(this.container.clientHeight / this.rowHeight)
-    this.end = this.oneClientRowSize * 4 - 1
-    if (this.pageSize < this.oneClientRowSize * 4) {
-      const error = `pageSize太小不满足引擎启动要求,应大于等于${this.oneClientRowSize * 4}`
+    const oneClientRowSize = Math.ceil(this.container.clientHeight / this.rowHeight)
+    if (!this.sectionSize) this.sectionSize = oneClientRowSize
+    this.end = this.sectionSize * 4 - 1
+    if (this.sectionSize < oneClientRowSize) {
+      const error = `sectionSize太小不满足引擎启动要求,应大于等于${oneClientRowSize}`
       throw new Error(error)
     }
     this.listenScroll()
     this.rangeChange()
+    this.pageChange()
   }
   rangeChange() {
     this.eventHandle['rangeChange'](this.start, this.end)
-    this.container.scrollTop + this.oneClientRowSize * this.rowHeight
+    this.container.scrollTop + this.sectionSize * this.rowHeight
+  }
+  pageChange() {
+    if (this.isStatic) return
+    this.eventHandle['pageChange'](this.pageNo, this.sectionSize * 4)
+  }
+  started(initParms) {
+    this.eventHandle['started'](initParms)
   }
   scrollHander(e) {
     const forwardCriticalPoint = Math.ceil((this.start + this.end) / 2) // 指针前进临界点
-    const backCriticalPoint = forwardCriticalPoint - this.oneClientRowSize // 指针后退临界点
+    const backCriticalPoint = forwardCriticalPoint - this.sectionSize // 指针后退临界点
     if (e.target.scrollTop > forwardCriticalPoint * this.rowHeight) {
-      this.start += this.oneClientRowSize
-      this.end += this.oneClientRowSize
+      this.start += this.sectionSize
+      this.end += this.sectionSize
       this.rangeChange()
     }
     if (e.target.scrollTop < backCriticalPoint * this.rowHeight && this.start > 0) {
-      this.start -= this.oneClientRowSize
-      this.end -= this.oneClientRowSize
+      this.start -= this.sectionSize
+      this.end -= this.sectionSize
       this.rangeChange()
     }
-    if (this.end + this.oneClientRowSize > this.pageSize * this.pageNo) {
+    if (this.end + this.sectionSize > this.sectionSize * 4 * this.pageNo) {
       // 需要增加数据
       this.pageNo++
-      this.eventHandle['pageNoChange'](this.pageNo, this.pageSize)
     }
   }
   // 监听滚动条
