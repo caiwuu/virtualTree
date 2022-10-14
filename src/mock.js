@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-10-13 15:59:24
+ * @LastEditTime: 2022-10-13 17:01:50
  */
 import Mock from 'mockjs'
 const data = []
@@ -42,6 +42,6 @@ function genItems(startId, pid, count, level, parent) {
   }
   return res
 }
-const res = genItems(1, 0, 30, 0, {})
+const res = genItems(1, 0, 15, 0, {})
 data.push(...res)
 export { data }

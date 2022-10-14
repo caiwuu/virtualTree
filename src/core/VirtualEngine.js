@@ -39,7 +39,6 @@ export default class {
   }
   rangeChange() {
     this.eventHandle['rangeChange'](this.start, this.end)
-    this.container.scrollTop + this.sectionSize * this.rowHeight
   }
   pageChange() {
     if (this.isStatic) return

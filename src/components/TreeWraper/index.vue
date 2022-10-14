@@ -3,7 +3,7 @@
  * @Description: 
  * @CreateDate: 
  * @LastEditor: 
- * @LastEditTime: 2022-10-13 16:18:28
+ * @LastEditTime: 2022-10-14 17:36:17
 -->
 <template>
     <div class="container">
@@ -89,8 +89,30 @@ export default {
     },
     methods: {
         collapseChange(item, index) {
-            const i = search(this.allData, item)
-            console.log(i);
+            const { level, collapsed } = item
+            const activeIdx = index + this.start
+            // 折叠行为
+            if (collapsed) {
+                for (let idx = activeIdx + 1; idx < this.activeData.length; idx++) {
+                    const ele = this.activeData[idx];
+                    if (ele.level === level) {
+                        this.activeData.splice(activeIdx + 1, idx - activeIdx - 1)
+                        return
+                    }
+                }
+                this.activeData.splice(activeIdx + 1, this.activeData.length - activeIdx - 1)
+            } else {
+                // 展开行为
+                const i = search(this.allData, item)
+                // const nextIdx = index + 1
+                // const res = []
+                // for (let idx = i + 1; idx < this.allData; idx++) {
+                //     const ele = this.allData[idx];
+                // }
+                console.log(i);
+            }
+
+
         },
     },
     created() {
