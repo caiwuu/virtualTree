@@ -42,6 +42,6 @@ function genItems(startId, pid, count, level, parent) {
   }
   return res
 }
-const res = genItems(1, 0, 15, 0, {})
+const res = genItems(1, 0, 10, 0, {})
 data.push(...res)
 export { data }

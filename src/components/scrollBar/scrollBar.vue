@@ -1,5 +1,10 @@
 <template>
-  <div @click="handleMouseMove" ref="scrollTrack" class="scroll-track">
+  <div
+    @click="handleMouseMove"
+    :style="{ display: hidden ? 'none' : 'auto' }"
+    ref="scrollTrack"
+    class="scroll-track"
+  >
     <div @mousedown="handleMouseDown" class="scroll-item" :style="style"></div>
   </div>
 </template>
@@ -18,6 +23,7 @@
         top: 0,
         minHeight: 30,
         scrollHeight: 0,
+        hidden: false,
       }
     },
     props: {
@@ -47,9 +53,18 @@
         })
       },
       updateSize() {
-        console.log(this.totalHeight)
-        this.scrollHeight =
-          (this.vt.container.clientHeight / this.totalHeight) * this.trackHeight + this.minHeight
+        console.log(
+          this.vt.container.clientHeight,
+          this.totalHeight,
+          this.trackHeight,
+          this.minHeight
+        )
+        if (this.vt.container.clientHeight >= this.totalHeight) {
+          this.hidden = true
+        } else {
+          this.scrollHeight =
+            (this.vt.container.clientHeight / this.totalHeight) * this.trackHeight + this.minHeight
+        }
       },
       updateScrollTop(top) {
         this.top = (top * this.trackHeight) / this.totalHeight
