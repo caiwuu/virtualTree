@@ -5,6 +5,8 @@
  * @LastEditor:
  * @LastEditTime: 2022-10-13 10:59:51
  */
+import emit from 'mitt'
+const emitter = emit()
 export default class {
   start = 0
   end = 0
@@ -21,7 +23,10 @@ export default class {
     this.dataSize = dataSize
   }
   on(eventName, fn) {
-    this.eventHandle[eventName] = fn
+    emitter.on(eventName, fn)
+  }
+  emit(eventName, args) {
+    emitter.emit(eventName, args)
   }
   // 启动引擎 需要在container挂载之后启动
   run(fn) {
@@ -40,16 +45,11 @@ export default class {
     fn(this)
   }
   rangeChange() {
-    this.eventHandle['rangeChange'](this.start, this.end)
+    this.emit('rangeChange', { start: this.start, end: this.end })
   }
   pageChange() {
     if (this.isStatic) return
-    this.eventHandle['pageChange'](this.pageNo, this.sectionSize * 4)
-  }
-  started() {
-    this.eventHandle['started']({
-      clientHeight: this.container.clientHeight,
-    })
+    this.emit('pageChange', { pageNo: this.pageNo, pageSize: this.sectionSize * 4 })
   }
   scrollHander(e) {
     const forwardCriticalPoint = Math.ceil((this.start + this.end) / 2) // 指针前进临界点

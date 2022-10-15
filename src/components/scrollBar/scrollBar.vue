@@ -41,8 +41,13 @@
         this.vt = vt
         vt.$scrollBar = this
         this.updateSize()
+        this.vt.on('dataSize', (v) => {
+          this.vt.dataSize = v
+          this.updateSize()
+        })
       },
       updateSize() {
+        console.log(this.totalHeight)
         this.scrollHeight =
           (this.vt.container.clientHeight / this.totalHeight) * this.trackHeight + this.minHeight
       },
@@ -62,8 +67,8 @@
         } else {
           this.vt.start = 0
         }
-        this.vt.rangeChange()
         this.vt.end = this.vt.start + this.vt.sectionSize * 4 - 1
+        this.vt.rangeChange()
         setTimeout(() => {
           this.vt.container.scrollTop = scrollTop
         })
@@ -88,9 +93,6 @@
         this.top = top
         this.updateVt(top)
       },
-    },
-    mounted() {
-      console.log(this.$refs.scrollTrack)
     },
   }
 </script>

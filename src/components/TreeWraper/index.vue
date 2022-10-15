@@ -129,10 +129,10 @@
         isStatic: this.isStatic,
         dataSize: this.activeData.length,
       })
-      this.virtuaListEngine.on('pageChange', (pageNo, pageSize) => {
+      this.virtuaListEngine.on('pageChange', ({ pageNo, pageSize }) => {
         console.log('请求数据', pageNo, pageSize)
       })
-      this.virtuaListEngine.on('rangeChange', (start, end) => {
+      this.virtuaListEngine.on('rangeChange', ({ start, end }) => {
         console.log('数据区间改变', start, end)
         this.start = start
         this.end = end
@@ -144,7 +144,15 @@
         this.$refs.scrollBar.connect(vt)
       })
     },
+    watch: {
+      dataSize(nv) {
+        this.virtuaListEngine && this.virtuaListEngine.emit('dataSize', nv)
+      },
+    },
     computed: {
+      dataSize() {
+        return this.activeData.length
+      },
       isStatic() {
         return typeof sourceData !== 'function'
       },
