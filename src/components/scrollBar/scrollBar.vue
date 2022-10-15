@@ -17,6 +17,7 @@
       return {
         top: 0,
         minHeight: 30,
+        scrollHeight: 0,
       }
     },
     props: {
@@ -26,10 +27,47 @@
     },
     computed: {
       style() {
-        return `top:${this.top}px;height: ${this.minHeight}px;`
+        return `top:${this.top}px;height: ${this.scrollHeight}px;`
+      },
+      totalHeight() {
+        return this.vt.dataSize * this.vt.rowHeight
+      },
+      trackHeight() {
+        return this.height - this.minHeight
       },
     },
     methods: {
+      connect(vt) {
+        this.vt = vt
+        vt.$scrollBar = this
+        this.updateSize()
+      },
+      updateSize() {
+        this.scrollHeight =
+          (this.vt.container.clientHeight / this.totalHeight) * this.trackHeight + this.minHeight
+      },
+      updateScrollTop(top) {
+        this.top = (top * this.trackHeight) / this.totalHeight
+      },
+      updateVt(top) {
+        const scrollTopRatio = top / this.trackHeight
+        const outScreenNum = Math.floor(scrollTopRatio * this.vt.dataSize)
+        const scrollTopSection = Math.floor(outScreenNum / this.vt.sectionSize)
+        const scrollTop = scrollTopRatio * this.totalHeight
+        const offsetSection = scrollTopSection - 2
+        if (offsetSection >= 0) {
+          if (scrollTop > scrollTopSection * this.vt.sectionSize * this.vt.rowHeight) {
+            this.vt.start = (offsetSection + 1) * this.vt.sectionSize
+          }
+        } else {
+          this.vt.start = 0
+        }
+        this.vt.rangeChange()
+        this.vt.end = this.vt.start + this.vt.sectionSize * 4 - 1
+        setTimeout(() => {
+          this.vt.container.scrollTop = scrollTop
+        })
+      },
       handleMouseDown(e) {
         pauseEvent(e)
         window.addEventListener('mousemove', this.handleMouseMove)
@@ -44,11 +82,11 @@
         let top = y - (this.$refs.scrollTrack.getBoundingClientRect().top + window.pageYOffset)
         if (top < 0) {
           top = 0
-        } else if (top > this.height - this.minHeight) {
-          top = this.height - this.minHeight
+        } else if (top > this.height - this.scrollHeight) {
+          top = this.height - this.scrollHeight
         }
         this.top = top
-        console.log(top)
+        this.updateVt(top)
       },
     },
     mounted() {

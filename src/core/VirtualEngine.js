@@ -13,17 +13,18 @@ export default class {
   eventHandle = {}
   pageNo = 1
   constructor(config) {
-    const { container, rowHeight, sectionSize, isStatic } = config
+    const { container, rowHeight, sectionSize, isStatic, dataSize } = config
     this.container = container
     this.rowHeight = rowHeight
     this.sectionSize = sectionSize
     this.isStatic = isStatic
+    this.dataSize = dataSize
   }
   on(eventName, fn) {
     this.eventHandle[eventName] = fn
   }
   // 启动引擎 需要在container挂载之后启动
-  run() {
+  run(fn) {
     this.initContainerDom()
     // 校验启动参数
     const oneClientRowSize = Math.ceil(this.container.clientHeight / this.rowHeight)
@@ -36,6 +37,7 @@ export default class {
     this.listenScroll()
     this.rangeChange()
     this.pageChange()
+    fn(this)
   }
   rangeChange() {
     this.eventHandle['rangeChange'](this.start, this.end)
@@ -44,8 +46,10 @@ export default class {
     if (this.isStatic) return
     this.eventHandle['pageChange'](this.pageNo, this.sectionSize * 4)
   }
-  started(initParms) {
-    this.eventHandle['started'](initParms)
+  started() {
+    this.eventHandle['started']({
+      clientHeight: this.container.clientHeight,
+    })
   }
   scrollHander(e) {
     const forwardCriticalPoint = Math.ceil((this.start + this.end) / 2) // 指针前进临界点
@@ -64,6 +68,7 @@ export default class {
       // 需要增加数据
       this.pageNo++
     }
+    this.$scrollBar.updateScrollTop(e.target.scrollTop)
   }
   // 监听滚动条
   listenScroll() {
