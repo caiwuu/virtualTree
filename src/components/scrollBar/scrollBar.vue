@@ -36,34 +36,36 @@
         return `top:${this.top}px;height: ${this.scrollHeight}px;`
       },
       totalHeight() {
-        return this.vt.dataSize * this.vt.rowHeight
+        return this.ve.dataSize * this.ve.rowHeight
       },
       trackHeight() {
         return this.height - this.minHeight
       },
     },
     methods: {
-      connect(vt) {
-        this.vt = vt
-        vt.$scrollBar = this
+      connect(ve) {
+        this.ve = ve
         this.updateSize()
-        this.vt.on('dataSize', (v) => {
-          this.vt.dataSize = v
+        this.ve.on('scroll', (top) => {
+          this.top = (top * this.trackHeight) / this.totalHeight
+        })
+        this.ve.on('dataSize', (v) => {
+          this.ve.dataSize = v
           this.updateSize()
         })
       },
       updateSize() {
         console.log(
-          this.vt.container.clientHeight,
+          this.ve.container.clientHeight,
           this.totalHeight,
           this.trackHeight,
           this.minHeight
         )
-        if (this.vt.container.clientHeight >= this.totalHeight) {
+        if (this.ve.container.clientHeight >= this.totalHeight) {
           this.hidden = true
         } else {
           this.scrollHeight =
-            (this.vt.container.clientHeight / this.totalHeight) * this.trackHeight + this.minHeight
+            (this.ve.container.clientHeight / this.totalHeight) * this.trackHeight + this.minHeight
         }
       },
       updateScrollTop(top) {
@@ -71,21 +73,21 @@
       },
       updateVt(top) {
         const scrollTopRatio = top / this.trackHeight
-        const outScreenNum = Math.floor(scrollTopRatio * this.vt.dataSize)
-        const scrollTopSection = Math.floor(outScreenNum / this.vt.sectionSize)
+        const outScreenNum = Math.floor(scrollTopRatio * this.ve.dataSize)
+        const scrollTopSection = Math.floor(outScreenNum / this.ve.sectionSize)
         const scrollTop = scrollTopRatio * this.totalHeight
         const offsetSection = scrollTopSection - 2
         if (offsetSection >= 0) {
-          if (scrollTop > scrollTopSection * this.vt.sectionSize * this.vt.rowHeight) {
-            this.vt.start = (offsetSection + 1) * this.vt.sectionSize
+          if (scrollTop > scrollTopSection * this.ve.sectionSize * this.ve.rowHeight) {
+            this.ve.start = (offsetSection + 1) * this.ve.sectionSize
           }
         } else {
-          this.vt.start = 0
+          this.ve.start = 0
         }
-        this.vt.end = this.vt.start + this.vt.sectionSize * 4 - 1
-        this.vt.rangeChange()
+        this.ve.end = this.ve.start + this.ve.sectionSize * 4 - 1
+        this.ve.rangeChange()
         setTimeout(() => {
-          this.vt.container.scrollTop = scrollTop
+          this.ve.container.scrollTop = scrollTop
         })
       },
       handleMouseDown(e) {

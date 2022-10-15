@@ -10,9 +10,7 @@ const emitter = emit()
 export default class {
   start = 0
   end = 0
-  translateY = 0
   oneClientRowSize = 0
-  eventHandle = {}
   pageNo = 1
   constructor(config) {
     const { container, rowHeight, sectionSize, isStatic, dataSize } = config
@@ -68,7 +66,7 @@ export default class {
       // 需要增加数据
       this.pageNo++
     }
-    this.$scrollBar.updateScrollTop(e.target.scrollTop)
+    this.emit('scroll', e.target.scrollTop)
   }
   // 监听滚动条
   listenScroll() {
