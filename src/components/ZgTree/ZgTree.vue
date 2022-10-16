@@ -312,10 +312,12 @@ export default {
         } else {
           this.selectList.push(item)
         }
+        console.log(this.selectList)
         if(this.selectList.length === 0) {
           for (let i = 0; i < this.list.length; i++) {
             this.list[i].checkType = this.checkType.UNCHECKED
           }
+          console.log(this.list)
         } else {
           this.selectList.forEach((e)=>{
             switch (e.checkType) {
@@ -329,6 +331,7 @@ export default {
                 item.checkType = this.checkType.UNCHECKED
                 break
               default:
+                item.checkType = this.checkType.CHECKED
                 break
             }
           })
