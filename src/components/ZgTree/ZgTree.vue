@@ -40,21 +40,9 @@ export default {
       type: [Number],
       default: 26,
     },
-    currentNodeKey: {
-      type: [Number],
-      default: 10,
-    },
-    defaultCheckedKeys: {
-      type: [Number],
-      default: 10,
-    },
-    checkStrictly: {
-      type: [Number],
-      default: 10,
-    },
     checkOnClickNode: {
-      type: [Number],
-      default: 10,
+      type: [Boolean],
+      default: false,
     },
     sourceData: {
       type: Array,
@@ -64,6 +52,7 @@ export default {
   data() {
     return {
       selectedMap: {},
+      selectList: [],
       checkType: Object.freeze({
         UNCHECKED: 0,
         INDETERMINATE: 1,
@@ -76,7 +65,6 @@ export default {
       return this.sourceData
     },
   },
-  created() { },
   methods: {
     /**
      * 获取孩子是否存在
@@ -99,19 +87,32 @@ export default {
      * 生成选中的map数据
      * @param item
      */
-    createSelectMap(item) {
-      if (this.selectedMap[item.id]) {
-        delete this.selectedMap[item.id]
-      } else {
-        for (const itemElement in this.selectedMap) {
-          if (
-            this.selectedMap[itemElement].node.level > item.level &&
-            this.selectedMap[itemElement].node.position.slice(0, item.position.length + 1) ===
-            item.position + '-'
-          ) {
-            delete this.selectedMap[itemElement]
+    createSelectMap (item) {
+      let map = this.selectedMap;
+      let node = this.selectedMap[item.id];
+      Object.keys(map).forEach((key) => {
+        let mapIndex = -1
+        let has = map[key].exclude.find((e, i) => {
+          let state = item.id === e.id
+          if (state) {
+            mapIndex = i
           }
+          return state
+        })
+        if (has) {
+          map.exclude.splice(mapIndex, 1)
         }
+      })
+      // 如果存在当前key并且如果孩子数量满了则删除当前key否则清空exclude
+      if (node) {
+        let childCount = node.exclude.find(e => item.id + '' === e.pid + '');
+        if (childCount?.length === node.childCount) {
+          node.exclude = [];
+        } else {
+          delete this.selectedMap[item.id];
+        }
+      }
+      if (!node) {
         let arr = item.position.split('-')
         let state = true
         for (let i = 0; i < arr.length - 1; i++) {
@@ -120,7 +121,6 @@ export default {
             state = false
             let mapIndex = -1
             let has = map.exclude.find((e, i) => {
-              // || item.level < e.level && e.position.slice(0, item.position.length + 1) === item.position + '-'
               let state = item.id === e.id
               if (state) {
                 mapIndex = i
@@ -142,28 +142,40 @@ export default {
           }
         }
       }
+
+        // 如果不存在当前key当时
+        // for (const itemElement in this.selectedMap) {
+        //   if (
+        //       this.selectedMap[itemElement].node.level > item.level &&
+        //       this.selectedMap[itemElement].node.position.slice(0, item.position.length + 1) ===
+        //       item.position + '-'
+        //   ) {
+        //     delete this.selectedMap[itemElement]
+        //   }
+        // }
+
     },
     /**
      * 取消选中上级
      * @param item
      */
     noCheckParents(item) {
-      let nodeList = this.sourceData.filter((e) => {
+      let nodeList = this.list.filter((e) => {
         return (
           item.pid === e.pid &&
           e.checkType !== this.checkType.INDETERMINATE &&
           e.checkType !== this.checkType.CHECKED
         )
       })
-      let pNode = this.sourceData.find((e) => {
+      let pNode = this.list.find((e) => {
         return item.pid + '' === e.id + ''
       })
       if (pNode && pNode.childCount) {
         if (pNode.childCount === nodeList.length) {
-          for (let i = 0; i < this.sourceData.length; i++) {
-            if (this.sourceData[i].id === pNode.id && item.level !== 0) {
-              this.sourceData[i].checkType = this.checkType.UNCHECKED
-              this.noCheckParents(this.sourceData[i])
+          for (let i = 0; i < this.list.length; i++) {
+            if (this.list[i].id === pNode.id && item.level !== 0) {
+              this.list[i].checkType = this.checkType.UNCHECKED
+              this.noCheckParents(this.list[i])
               break
             }
           }
@@ -172,14 +184,14 @@ export default {
           console.log(arr)
           if (arr.length > 1) {
             for (let i = 0; i < arr.length - 1; i++) {
-              for (let j = 0; j < this.sourceData.length; j++) {
+              for (let j = 0; j < this.list.length; j++) {
                 console.log(
                   arr[i],
-                  this.sourceData[j].id + '',
-                  arr[i] + '' === this.sourceData[j].id + ''
+                  this.list[j].id + '',
+                  arr[i] + '' === this.list[j].id + ''
                 )
-                if (arr[i] + '' === this.sourceData[j].id + '' && item.level !== 0) {
-                  this.sourceData[j].checkType = this.checkType.INDETERMINATE
+                if (arr[i] + '' === this.list[j].id + '' && item.level !== 0) {
+                  this.list[j].checkType = this.checkType.INDETERMINATE
                   break
                 }
               }
@@ -193,18 +205,18 @@ export default {
      * @param item
      */
     checkParents(item) {
-      let nodeList = this.sourceData.filter((e) => {
+      let nodeList = this.list.filter((e) => {
         return item.pid === e.pid && e.checkType === this.checkType.CHECKED
       })
-      let pNode = this.sourceData.find((e) => {
+      let pNode = this.list.find((e) => {
         return item.pid + '' === e.id + ''
       })
       if (pNode && pNode.childCount) {
         if (pNode.childCount === nodeList.length) {
-          for (let i = 0; i < this.sourceData.length; i++) {
-            if (this.sourceData[i].id === pNode.id && item.level !== 0) {
-              this.sourceData[i].checkType = this.checkType.CHECKED
-              this.checkParents(this.sourceData[i])
+          for (let i = 0; i < this.list.length; i++) {
+            if (this.list[i].id === pNode.id && item.level !== 0) {
+              this.list[i].checkType = this.checkType.CHECKED
+              this.checkParents(this.list[i])
               break
             }
           }
@@ -212,9 +224,9 @@ export default {
           let arr = item.position.split('-')
           if (arr.length > 1) {
             for (let i = 0; i < arr.length - 1; i++) {
-              for (let j = 0; j < this.sourceData.length; j++) {
-                if (arr[i] + '' === this.sourceData[j].id + '' && item.level !== 0) {
-                  this.sourceData[j].checkType = this.checkType.INDETERMINATE
+              for (let j = 0; j < this.list.length; j++) {
+                if (arr[i] + '' === this.list[j].id + '' && item.level !== 0) {
+                  this.list[j].checkType = this.checkType.INDETERMINATE
                   break
                 }
               }
@@ -272,17 +284,17 @@ export default {
         case 0:
           item.checkType = this.checkType.CHECKED
           this.checkParents(item)
-          this.checkChild(item, this.checkType.CHECKED, this.sourceData)
+          this.checkChild(item, this.checkType.CHECKED, this.list)
           break
         case 1:
           item.checkType = this.checkType.CHECKED
           this.checkParents(item)
-          this.checkChild(item, this.checkType.CHECKED, this.sourceData)
+          this.checkChild(item, this.checkType.CHECKED, this.list)
           break
         case 2:
           item.checkType = this.checkType.UNCHECKED
           this.noCheckParents(item)
-          this.checkChild(item, this.checkType.UNCHECKED, this.sourceData)
+          this.checkChild(item, this.checkType.UNCHECKED, this.list)
           break
         default:
           break
@@ -293,14 +305,47 @@ export default {
      * @param item
      */
     selectChange(item) {
-      for (let i = 0; i < this.sourceData.length; i++) {
-        this.sourceData[i].checkType = this.checkType.UNCHECKED
+      if(this.checkOnClickNode) {
+        let index = this.selectList.findIndex(e => item.id + '' === e.id + '')
+        if(index !== -1) {
+          this.selectList.splice(index,1);
+        } else {
+          this.selectList.push(item)
+        }
+        if(this.selectList.length === 0) {
+          for (let i = 0; i < this.list.length; i++) {
+            this.list[i].checkType = this.checkType.UNCHECKED
+          }
+        } else {
+          this.selectList.forEach((e)=>{
+            switch (e.checkType) {
+              case 0:
+                item.checkType = this.checkType.CHECKED
+                break
+              case 1:
+                item.checkType = this.checkType.CHECKED
+                break
+              case 2:
+                item.checkType = this.checkType.UNCHECKED
+                break
+              default:
+                break
+            }
+          })
+        }
+        console.log(this.selectList);
+        this.$emit('selectChange', this.selectList)
+      } else {
+        for (let i = 0; i < this.list.length; i++) {
+          this.list[i].checkType = this.checkType.UNCHECKED
+        }
+        this.createSelectMap(item)
+        console.log(this.selectedMap)
+        this.checkBySelectedMap(this.selectedMap, this.list)
+        // this.selectByClick(item);
+        this.$emit('selectChange', this.selectedMap)
       }
-      this.createSelectMap(item)
-      console.log(this.selectedMap)
-      this.checkBySelectedMap(this.selectedMap, this.sourceData)
-      // this.selectByClick(item);
-      this.$emit('selectChange')
+
     },
   },
 }

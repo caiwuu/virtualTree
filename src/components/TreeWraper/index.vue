@@ -11,6 +11,7 @@
       <zg-tree
         :style="innerStyle"
         v-bind="config"
+        checkOnClickNode
         :sourceData="rangeData"
         @collapseChange="collapseChange"
       >
