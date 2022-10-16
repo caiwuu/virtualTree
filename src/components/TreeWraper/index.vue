@@ -26,41 +26,8 @@
   import VirtualListEngine from '@/core/VirtualEngine'
   import scrollBar from '../scrollBar/scrollBar'
   import uuid from '@/utils/uuid'
+  import search from '@/utils/search'
 
-  // position 比较运算 left > right ?
-  function greaterThan(left, right) {
-    const leftArr = left.split('-')
-    const rightArr = right.split('-')
-    for (let index = 0; index < leftArr.length; index++) {
-      if (rightArr[index] === undefined) {
-        return true
-      }
-      if (+leftArr[index] > +rightArr[index]) {
-        return true
-      }
-      if (+leftArr[index] < +rightArr[index]) {
-        return false
-      }
-    }
-    return false
-  }
-  // findindex 效率太低，这里采用二分查找查找元素在原始数据中的位置
-  function search(nums, target) {
-    let low = 0,
-      high = nums.length - 1
-    while (low <= high) {
-      const mid = Math.floor((high - low) / 2) + low
-      const num = nums[mid]
-      if (num.id === target.id) {
-        return mid
-      } else if (greaterThan(num.position, target.position)) {
-        high = mid - 1
-      } else {
-        low = mid + 1
-      }
-    }
-    return -1
-  }
   export default {
     name: 'VirtualTree',
     props: {
