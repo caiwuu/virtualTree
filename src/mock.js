@@ -3,10 +3,67 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-10-17 16:02:27
+ * @LastEditTime: 2022-10-17 17:25:01
  */
 import Mock from 'mockjs'
-const data = []
+const staticData = [
+  {
+    childCount: 2,
+    collapsed: false,
+    data: {},
+    id: 1,
+    isLeaf: false,
+    level: 0,
+    name: '1',
+    pid: 0,
+    position: '1',
+  },
+  {
+    childCount: 2,
+    collapsed: false,
+    data: {},
+    id: 2,
+    isLeaf: false,
+    level: 1,
+    name: '1-0',
+    pid: 1,
+    position: '1-2',
+  },
+  {
+    childCount: 2,
+    collapsed: false,
+    data: {},
+    id: 3,
+    isLeaf: false,
+    level: 2,
+    name: '1-0-0',
+    pid: 1,
+    position: '1-2-3',
+  },
+  {
+    childCount: 2,
+    collapsed: false,
+    data: {},
+    id: 4,
+    isLeaf: false,
+    level: 3,
+    name: '1-0-0-0',
+    pid: 1,
+    position: '1-2-3-4',
+  },
+  {
+    childCount: 2,
+    collapsed: false,
+    data: {},
+    id: 5,
+    isLeaf: false,
+    level: 1,
+    name: '1-1',
+    pid: 1,
+    position: '1-5',
+  },
+]
+const mockData = []
 function genItems(startId, pid, count, level, parent) {
   let res
   if (level === 4) {
@@ -18,10 +75,10 @@ function genItems(startId, pid, count, level, parent) {
           'id|+1': startId,
           pid: pid,
           level: level,
+          'isLeaf|1': true,
           collapsed: function () {
             return this.isLeaf
           },
-          'isLeaf|1': true,
           'data|1': {},
         },
       ],
@@ -43,5 +100,8 @@ function genItems(startId, pid, count, level, parent) {
   return res
 }
 const res = genItems(1, 0, 10, 0, {})
-data.push(...res)
+mockData.push(...res)
+// const data = staticData
+const data = mockData
+console.log(data)
 export { data }

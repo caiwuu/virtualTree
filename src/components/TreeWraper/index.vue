@@ -3,7 +3,7 @@
  * @Description: 
  * @CreateDate: 
  * @LastEditor: 
- * @LastEditTime: 2022-10-17 16:01:51
+ * @LastEditTime: 2022-10-17 17:19:35
 -->
 <template>
     <div class="container">
@@ -64,7 +64,7 @@ export default {
                 item.collapsed = true
                 for (let idx = activeIdx + 1; idx < this.activeData.length; idx++) {
                     const ele = this.activeData[idx]
-                    if (ele.level <= level) {
+                    if (level >= ele.level) {
                         this.activeData.splice(activeIdx + 1, idx - activeIdx - 1)
                         return
                     }
@@ -75,26 +75,28 @@ export default {
                 // 在总数据池中的位置 
                 item.collapsed = false
                 const i = search(this.allData, item)
-                const queue = [item]
+                let queue = [item]
                 const res = []
                 for (let idx = i + 1; idx < this.allData.length; idx++) {
+                    // debugger
                     const ele = this.allData[idx]
                     let lastQueueEle = queue[queue.length - 1]
-                    if (level === ele.level) {
+                    if (level >= ele.level) {
+                        console.log(res);
                         this.activeData.splice(activeIdx + 1, 0, ...res)
                         return
                     }
-                    if (lastQueueEle.level === ele.level) {
-                        queue.pop()
+                    if (lastQueueEle.level >= ele.level) {
+                        queue = queue.slice(0, ele.level)
                         lastQueueEle = queue[queue.length - 1]
                     }
                     if (!lastQueueEle.collapsed) {
                         res.push(ele)
+                        if (lastQueueEle.level < ele.level) queue.push(ele)
                     }
-                    if (lastQueueEle.level < ele.level) {
-                        queue.push(ele)
-                    }
+
                 }
+                console.log(res);
                 this.activeData.splice(activeIdx + 1, 0, ...res)
             }
         },
