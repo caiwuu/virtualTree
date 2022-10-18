@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-10-18 13:45:26
+ * @LastEditTime: 2022-10-18 15:24:50
 -->
 <template>
   <div class="demo-container">
@@ -25,6 +25,13 @@ export default {
   data() {
     return {
       data: data,
+      config: {
+        itemHeight: 80,
+        levelDistance: 20,
+        showCheckbox: true,
+        height: 400,
+        width: 800,
+      }
     }
   },
 }
