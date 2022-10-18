@@ -9,6 +9,7 @@
     <div class="container">
         <div :id="uuid" class="tree-wraper" :style="style">
             <zg-tree v-slot="{...scope}" :style="innerStyle" v-bind="config" checkOnClickNode :sourceData="rangeData"
+                :currentNodeKey="[1,111,1111]"
                 @collapseChange="collapseChange">
                 <slot v-bind="scope"></slot>
             </zg-tree>
@@ -34,7 +35,8 @@ export default {
         config: {
             type: Object,
             default: () => ({
-                itemHeight: 80,
+                color: '#409940',
+                itemHeight: 26,
                 levelDistance: 20,
                 showCheckbox: true,
                 height: 400,

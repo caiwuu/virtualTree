@@ -14,7 +14,7 @@
           'is-indeterminate': item.checkType === 1,
           'is-checked': item.checkType === 2,
         }">
-          <span class="zg-checkbox__inner"></span>
+          <span class="zg-checkbox__inner" :style="{backgroundColor:color,borderColor: color}"></span>
         </span>
       </label>
       <div class="zg-content">
@@ -49,6 +49,14 @@ export default {
       type: Array,
       default: () => [],
     },
+    currentNodeKey: {
+      type: Array,
+      default: () => [],
+    },
+    color: {
+      type: String,
+      default: '',
+    }
   },
   data() {
     return {
@@ -66,23 +74,23 @@ export default {
       return this.sourceData
     },
   },
+  mounted() {
+    this.currentNodeKey.forEach((key)=>{
+      let item = this.list.find(e => e.id + '' === key + '');
+      if(item){
+        this.selectChange(item)
+      }
+    })
+  },
   methods: {
-    /**
-     * 获取孩子是否存在
-     * @param id
-     * @returns {boolean}
-     */
-    hasChild(id) {
-      return this.data.some((e) => id === e.pid)
-    },
     /**
      * tree行点击事件
      * @param id
      * @param index
      */
     collapseChange(item, index) {
-      item.collapsed = !item.collapsed
-      this.$emit('collapseChange', item, index)
+      item.collapsed = !item.collapsed;
+      this.$emit('collapseChange', item, index);
     },
     /**
      * 生成选中的map数据
@@ -143,18 +151,6 @@ export default {
           }
         }
       }
-
-      // 如果不存在当前key当时
-      // for (const itemElement in this.selectedMap) {
-      //   if (
-      //       this.selectedMap[itemElement].node.level > item.level &&
-      //       this.selectedMap[itemElement].node.position.slice(0, item.position.length + 1) ===
-      //       item.position + '-'
-      //   ) {
-      //     delete this.selectedMap[itemElement]
-      //   }
-      // }
-
     },
     /**
      * 取消选中上级
@@ -298,6 +294,9 @@ export default {
           this.checkChild(item, this.checkType.UNCHECKED, this.list)
           break
         default:
+          item.checkType = this.checkType.CHECKED
+          this.checkParents(item)
+          this.checkChild(item, this.checkType.CHECKED, this.list)
           break
       }
     },
@@ -340,16 +339,25 @@ export default {
         console.log(this.selectList);
         this.$emit('selectChange', this.selectList)
       } else {
-        for (let i = 0; i < this.list.length; i++) {
-          this.list[i].checkType = this.checkType.UNCHECKED
+        let index = this.selectList.findIndex(e => item.id + '' === e.id + '')
+        if(index !== -1) {
+          this.selectList.splice(index,1);
+        } else {
+          this.selectList.push(item)
         }
-        this.createSelectMap(item)
-        console.log(this.selectedMap)
-        this.checkBySelectedMap(this.selectedMap, this.list)
-        // this.selectByClick(item);
-        this.$emit('selectChange', this.selectedMap)
+        console.log(this.selectList)
+        if(this.selectList.length === 0) {
+          for (let i = 0; i < this.list.length; i++) {
+            this.list[i].checkType = this.checkType.UNCHECKED
+          }
+        } else {
+          this.selectList.forEach((e)=>{
+            console.log(e.checkType)
+            this.selectByClick(e);
+          })
+        }
+        this.$emit('selectChange', this.selectList)
       }
-
     },
   },
 }
