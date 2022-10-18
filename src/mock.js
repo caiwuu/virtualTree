@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-10-17 17:25:01
+ * @LastEditTime: 2022-10-18 10:40:48
  */
 import Mock from 'mockjs'
 const staticData = [
@@ -68,6 +68,7 @@ function genItems(startId, pid, count, level, parent) {
   let res
   if (level === 4) {
     res = []
+    parent.isLeaf = true
   } else {
     res = Mock.mock({
       [`list|1-${count}`]: [
@@ -99,7 +100,7 @@ function genItems(startId, pid, count, level, parent) {
   }
   return res
 }
-const res = genItems(1, 0, 10, 0, {})
+const res = genItems(1 /*起始id*/, 0 /*父id*/, 10 /*子集最大数量*/, 0 /*级别*/, {} /*父级*/)
 mockData.push(...res)
 // const data = staticData
 const data = mockData

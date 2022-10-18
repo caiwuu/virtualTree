@@ -3,13 +3,14 @@
  * @Description: 
  * @CreateDate: 
  * @LastEditor: 
- * @LastEditTime: 2022-10-17 17:39:37
+ * @LastEditTime: 2022-10-18 13:44:44
 -->
 <template>
     <div class="container">
         <div :id="uuid" class="tree-wraper" :style="style">
-            <zg-tree :style="innerStyle" v-bind="config" checkOnClickNode :sourceData="rangeData"
+            <zg-tree v-slot="{...scope}" :style="innerStyle" v-bind="config" checkOnClickNode :sourceData="rangeData"
                 @collapseChange="collapseChange">
+                <slot v-bind="scope"></slot>
             </zg-tree>
         </div>
         <scroll-bar ref="scrollBar" :height="config.height"></scroll-bar>

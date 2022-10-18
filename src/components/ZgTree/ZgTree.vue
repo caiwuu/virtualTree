@@ -18,8 +18,9 @@
         </span>
       </label>
       <div class="zg-content">
-        {{ item.name }}
+        <slot :row="item" :index="index"></slot>
       </div>
+
     </div>
   </div>
 </template>
@@ -87,7 +88,7 @@ export default {
      * 生成选中的map数据
      * @param item
      */
-    createSelectMap (item) {
+    createSelectMap(item) {
       let map = this.selectedMap;
       let node = this.selectedMap[item.id];
       Object.keys(map).forEach((key) => {
@@ -143,16 +144,16 @@ export default {
         }
       }
 
-        // 如果不存在当前key当时
-        // for (const itemElement in this.selectedMap) {
-        //   if (
-        //       this.selectedMap[itemElement].node.level > item.level &&
-        //       this.selectedMap[itemElement].node.position.slice(0, item.position.length + 1) ===
-        //       item.position + '-'
-        //   ) {
-        //     delete this.selectedMap[itemElement]
-        //   }
-        // }
+      // 如果不存在当前key当时
+      // for (const itemElement in this.selectedMap) {
+      //   if (
+      //       this.selectedMap[itemElement].node.level > item.level &&
+      //       this.selectedMap[itemElement].node.position.slice(0, item.position.length + 1) ===
+      //       item.position + '-'
+      //   ) {
+      //     delete this.selectedMap[itemElement]
+      //   }
+      // }
 
     },
     /**
@@ -305,21 +306,21 @@ export default {
      * @param item
      */
     selectChange(item) {
-      if(this.checkOnClickNode) {
+      if (this.checkOnClickNode) {
         let index = this.selectList.findIndex(e => item.id + '' === e.id + '')
-        if(index !== -1) {
-          this.selectList.splice(index,1);
+        if (index !== -1) {
+          this.selectList.splice(index, 1);
         } else {
           this.selectList.push(item)
         }
         console.log(this.selectList)
-        if(this.selectList.length === 0) {
+        if (this.selectList.length === 0) {
           for (let i = 0; i < this.list.length; i++) {
             this.list[i].checkType = this.checkType.UNCHECKED
           }
           console.log(this.list)
         } else {
-          this.selectList.forEach((e)=>{
+          this.selectList.forEach((e) => {
             switch (e.checkType) {
               case 0:
                 item.checkType = this.checkType.CHECKED

@@ -38,24 +38,20 @@ export default {
     },
   },
   methods: {
+    // 连接 计算引擎VirtualEngine
     connect(ve) {
       this.ve = ve
       this.updateSize()
       this.ve.on('scroll', (top) => {
-        this.top = (top * this.trackHeight) / this.totalHeight
+        this.updateScrollTop(top)
       })
       this.ve.on('dataSize', (v) => {
         this.ve.dataSize = v
         this.updateSize()
       })
     },
+    // 更新模拟滚动条高度
     updateSize() {
-      console.log(
-        this.ve.container.clientHeight,
-        this.totalHeight,
-        this.trackHeight,
-        this.minHeight
-      )
       if (this.ve.container.clientHeight >= this.totalHeight) {
         this.hidden = true
       } else {
@@ -64,9 +60,11 @@ export default {
           (this.ve.container.clientHeight / this.totalHeight) * this.trackHeight + this.minHeight
       }
     },
+    // 更新模拟滚动条位置
     updateScrollTop(top) {
       this.top = (top * this.trackHeight) / this.totalHeight
     },
+    // 根据模拟滚动条的top距离去计算VirtualEngine的 数据区间 和 真实滚动条位置
     updateVt(top) {
       const scrollTopRatio = top / this.trackHeight
       const outScreenNum = Math.floor(scrollTopRatio * this.ve.dataSize)
@@ -75,13 +73,11 @@ export default {
       const offsetSection = scrollTopSection - 2
       if (offsetSection >= 0) {
         if (scrollTop > scrollTopSection * this.ve.sectionSize * this.ve.rowHeight) {
-          this.ve.start = (offsetSection + 1) * this.ve.sectionSize
+          this.ve.setRange((offsetSection + 1) * this.ve.sectionSize)
         }
       } else {
-        this.ve.start = 0
+        this.ve.setRange(0)
       }
-      this.ve.end = this.ve.start + this.ve.sectionSize * 4 - 1
-      this.ve.rangeChange()
       setTimeout(() => {
         this.ve.container.scrollTop = scrollTop
       })
