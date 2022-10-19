@@ -100,7 +100,7 @@ function genItems(startId, pid, count, level, parent) {
   }
   return res
 }
-const res = genItems(1 /*起始id*/, 0 /*父id*/, 5 /*子集最大数量*/, 0 /*级别*/, {} /*父级*/)
+const res = genItems(1 /*起始id*/, 0 /*父id*/, 10 /*子集最大数量*/, 0 /*级别*/, {} /*父级*/)
 mockData.push(...res)
 // const data = staticData
 const data = mockData
