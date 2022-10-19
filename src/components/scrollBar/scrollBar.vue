@@ -1,6 +1,6 @@
 <template>
   <div @click="handleMouseMove" :style="{ display: hidden ? 'none' : 'block' }" ref="scrollTrack" class="scroll-track">
-    <div @mousedown="handleMouseDown" class="scroll-item" :style="style"></div>
+    <div @mousedown="handleMouseDown" ref="scrollItem" class="scroll-item" :style="style"></div>
   </div>
 </template>
 
@@ -16,9 +16,10 @@ export default {
   data() {
     return {
       top: 0,
-      minHeight: 30,
+      minHeight: 15,
       scrollHeight: 0,
       hidden: false,
+      trackItemTop: 0
     }
   },
   props: {
@@ -83,6 +84,9 @@ export default {
       })
     },
     handleMouseDown(e) {
+      const y = typeof e.pageY === 'number' ? e.pageY : e.touches[0].pageY
+      this.trackItemTop = y - (this.$refs.scrollItem.getBoundingClientRect().top + window.pageYOffset)
+
       pauseEvent(e)
       window.addEventListener('mousemove', this.handleMouseMove)
       window.addEventListener('mouseup', this.handleMouseUp)
@@ -90,10 +94,11 @@ export default {
     handleMouseUp(e) {
       pauseEvent(e)
       window.removeEventListener('mousemove', this.handleMouseMove)
+      this.trackItemTop = this.scrollHeight / 2
     },
     handleMouseMove(e) {
       const y = typeof e.pageY === 'number' ? e.pageY : e.touches[0].pageY
-      let top = y - (this.$refs.scrollTrack.getBoundingClientRect().top + window.pageYOffset)
+      let top = y - (this.$refs.scrollTrack.getBoundingClientRect().top + window.pageYOffset) - this.trackItemTop
       if (top < 0) {
         top = 0
       } else if (top > this.height - this.scrollHeight) {

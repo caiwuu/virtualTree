@@ -3,11 +3,11 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-10-18 15:24:50
+ * @LastEditTime: 2022-10-19 09:20:40
 -->
 <template>
   <div class="demo-container">
-    <virtual-tree v-slot="{row}" :sourceData="data">
+    <virtual-tree :config="config" v-slot="{row}" :sourceData="data">
       {{row.name}}
     </virtual-tree>
   </div>
@@ -26,7 +26,7 @@ export default {
     return {
       data: data,
       config: {
-        itemHeight: 80,
+        itemHeight: 40,
         levelDistance: 20,
         showCheckbox: true,
         height: 400,
