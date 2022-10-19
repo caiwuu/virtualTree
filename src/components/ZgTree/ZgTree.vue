@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="zg-tree" v-for="(item, index) in list" :key="item.position" :style="{
+    <div ref="zgTree" class="zg-tree" v-for="(item, index) in list" :key="item.position" :style="{
       paddingLeft: item.level * levelDistance + 'px',
       height: itemHeight + 'px',
     }" @click="collapseChange(item, index)">
@@ -74,6 +74,17 @@ export default {
       return this.sourceData
     },
   },
+  watch: {
+    currentNodeKey() {
+      this.setNoSelectAll();
+      this.currentNodeKey.forEach((key)=>{
+        let item = this.list.find(e => e.id + '' === key + '');
+        if(item){
+          this.selectChange(item)
+        }
+      })
+    }
+  },
   mounted() {
     this.currentNodeKey.forEach((key)=>{
       let item = this.list.find(e => e.id + '' === key + '');
@@ -83,6 +94,21 @@ export default {
     })
   },
   methods: {
+    /**
+     * 获取当前选项
+     */
+    getSelect() {
+      return this.selectList;
+    },
+    /**
+     * 获取当前选项
+     */
+    setNoSelectAll() {
+      this.selectList = [];
+      for (let i = 0; i < this.list.length; i++) {
+        this.list[i].checkType = this.checkType.UNCHECKED
+      }
+    },
     /**
      * tree行点击事件
      * @param id
