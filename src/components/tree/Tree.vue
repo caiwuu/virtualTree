@@ -87,22 +87,14 @@ export default {
   },
   watch: {
     defaultCheckedKeys() {
-      this.setNoSelectAll()
-      this.defaultCheckedKeys.forEach((key) => {
-        let item = this.list.find((e) => e.id + '' === key + '')
-        if (item) {
-          this.selectChange(item)
-        }
-      })
+      this.setDefaultCheckedKeys();
     },
+    list() {
+      this.setSelect();
+    }
   },
   mounted() {
-    this.defaultCheckedKeys.forEach((key) => {
-      let item = this.list.find((e) => e.id + '' === key + '')
-      if (item) {
-        this.selectChange(item)
-      }
-    })
+    this.setDefaultCheckedKeys();
   },
   methods: {
     /**
@@ -112,9 +104,51 @@ export default {
       return this.selectList
     },
     /**
+     * 设置选中
+     */
+    setSelect(){
+      console.log(this.selectList)
+      if (this.selectList.length === 0) {
+        for (let i = 0; i < this.list.length; i++) {
+          this.list[i].checkType = this.checkType.UNCHECKED
+        }
+      }
+      this.selectList.forEach((id) => {
+        for (let i = 0; i < this.list.length; i++) {
+          if(this.list[i].id + '' === id + '') {
+            this.list[i].checkType = this.checkType.CHECKED
+          }
+        }
+      })
+    },
+    /**
+     * 设置选中列表
+     * @param item node
+     */
+    setSelectList(id) {
+      let index = this.selectList.findIndex((e) => id + '' === e.id + '')
+      if (index !== -1) {
+        this.selectList.splice(index, 1)
+      } else {
+        this.selectList.push(id)
+      }
+    },
+    /**
+     * 设置默认选中列表
+     * @param item node
+     */
+    setDefaultCheckedKeys() {
+      this.setNoSelectAll();
+      this.defaultCheckedKeys.forEach((id) => {
+        this.setSelectList(id);
+      })
+      this.setSelect();
+    },
+    /**
      * 获取当前选项
      */
     setNoSelectAll() {
+      console.log(12312)
       this.selectList = []
       for (let i = 0; i < this.list.length; i++) {
         this.list[i].checkType = this.checkType.UNCHECKED
@@ -342,37 +376,37 @@ export default {
      */
     selectChange(item) {
       if (this.checkOnClickNode) {
-        let index = this.selectList.findIndex((e) => item.id + '' === e.id + '')
+        let index = this.selectList.findIndex((id) => item.id + '' === id + '')
         if (index !== -1) {
           this.selectList.splice(index, 1)
         } else {
-          this.selectList.push(item)
+          this.selectList.push(item.id)
         }
-        // console.log(this.selectList)
         if (this.selectList.length === 0) {
           for (let i = 0; i < this.list.length; i++) {
             this.list[i].checkType = this.checkType.UNCHECKED
           }
-          // console.log(this.list)
         } else {
-          this.selectList.forEach((e) => {
-            switch (e.checkType) {
-              case 0:
-                item.checkType = this.checkType.CHECKED
-                break
-              case 1:
-                item.checkType = this.checkType.CHECKED
-                break
-              case 2:
-                item.checkType = this.checkType.UNCHECKED
-                break
-              default:
-                item.checkType = this.checkType.CHECKED
-                break
+          this.selectList.forEach((id) => {
+            let node = this.list.find((e) => e.id + '' === id + '');
+            if(node) {
+              switch (node.checkType) {
+                case 0:
+                  item.checkType = this.checkType.CHECKED
+                  break
+                case 1:
+                  item.checkType = this.checkType.CHECKED
+                  break
+                case 2:
+                  item.checkType = this.checkType.UNCHECKED
+                  break
+                default:
+                  item.checkType = this.checkType.CHECKED
+                  break
+              }
             }
           })
         }
-        // console.log(this.selectList)
         this.$emit('selectChange', this.selectList)
       } else {
         let index = this.selectList.findIndex((e) => item.id + '' === e.id + '')
@@ -381,7 +415,6 @@ export default {
         } else {
           this.selectList.push(item)
         }
-        // console.log(this.selectList)
         if (this.selectList.length === 0) {
           for (let i = 0; i < this.list.length; i++) {
             this.list[i].checkType = this.checkType.UNCHECKED
