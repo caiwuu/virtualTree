@@ -2,11 +2,12 @@
   <div>
     <div
       ref="zgTree"
-      class="zg-tree"
+      :class="{'zg-tree': true, 'is-active': item.active}"
       v-for="(item, index) in list"
       :key="item.position"
       :style="{
         paddingLeft: item.level * levelIndent + 'px',
+        lineHeight: (rowHeight > 20 ? rowHeight - 2 : rowHeight )+ 'px',
         height: rowHeight + 'px',
       }"
       @click="collapseChange(item, index)"
@@ -73,6 +74,7 @@ export default {
     return {
       selectedMap: {},
       selectList: [],
+      currectClickItem: {},
       checkType: Object.freeze({
         UNCHECKED: 0,
         INDETERMINATE: 1,
@@ -91,6 +93,7 @@ export default {
     },
     list() {
       this.setSelect();
+      this.setLineActive();
     }
   },
   mounted() {
@@ -107,7 +110,6 @@ export default {
      * 设置选中
      */
     setSelect(){
-      console.log(this.selectList)
       if (this.selectList.length === 0) {
         for (let i = 0; i < this.list.length; i++) {
           this.list[i].checkType = this.checkType.UNCHECKED
@@ -164,7 +166,20 @@ export default {
         item.collapsed = !item.collapsed
         this.$emit('collapseChange', item, index)
       }
+      this.list.forEach((e)=>e.active = false);
+      this.currectClickItem = item;
+      this.setLineActive();
       this.$emit('nodeClick', item)
+    },
+    /**
+     * 设置行点击选中
+     * @param item
+     */
+    setLineActive() {
+      if(this.currectClickItem){
+        this.list.forEach((e)=>e.active = false);
+        this.currectClickItem.active = true;
+      }
     },
     /**
      * 生成选中的map数据
@@ -443,9 +458,10 @@ li {
 }
 
 .zg-tree {
-  width: 200px;
+  width: 100%;
   height: 26px;
   line-height: 26px;
+  box-sizing: border-box;
   user-select: none;
 }
 
@@ -457,7 +473,7 @@ li {
 .zg-triangle {
   width: 20px;
   height: 26px;
-  line-height: 26px;
+  line-height: 24px;
   text-align: center;
   vertical-align: middle;
   display: inline-block;
@@ -562,5 +578,11 @@ li {
   left: 0;
   right: 0;
   top: 5px;
+}
+.zg-tree:hover,.zg-tree:focus,.zg-tree:active {
+  background-color: #f5f7fa;
+}
+.is-active {
+  background-color: #f5f7fa;
 }
 </style>

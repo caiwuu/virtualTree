@@ -11,6 +11,8 @@
       <span class="button" @click="getSeleced">获取当前选中</span>
       <span class="button" @click="selectByIds">设置勾选</span>
       <span class="button" @click="clearSelect">取消勾选</span>
+      <span class="button" @click="isShowCheckbox">隐藏展示勾选</span>
+      <span class="button" @click="isShowOperateBtn">隐藏展示操作</span>
       <span class="button" @click="setColor">设置颜色</span>
     </div>
     <div class="demo-container">
@@ -24,12 +26,17 @@
         :data="data"
         :level-indent="20"
         :checkbox-bg="checkboxBg"
-        show-checkbox
+        :show-checkbox="showCheckbox"
         @select-change="selectChange"
         @node-click="nodeClick"
       >
         {{ row.name }}
-      </virtual-tree>
+        <span v-if="showOperateBtn">
+          <span class="operateBtn" @click.stop="update(row)"><svg t="1666276805678" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4033" width="16" height="16"><path d="M768 864a96.2 96.2 0 0 0 27.89-4.11C783.94 899.31 747.32 928 704 928H192c-53.02 0-96-42.98-96-96V320c0-43.32 28.69-79.94 68.11-91.89A96.2 96.2 0 0 0 160 256v512c0 53.02 42.98 96 96 96h512z" p-id="4034" fill="#67C23A"></path><path d="M832 96H320c-43.32 0-79.94 28.69-91.89 68.11A96.2 96.2 0 0 0 224 192v512c0 53.02 42.98 96 96 96h512a96.2 96.2 0 0 0 27.89-4.11C899.31 783.94 928 747.32 928 704V192c0-53.02-42.98-96-96-96zM701.42 361.04L497.77 564.69 441.21 576l11.31-56.57 203.65-203.65c12.49-12.49 32.75-12.49 45.25 0 12.5 12.5 12.5 32.76 0 45.26z" p-id="4035" fill="#67C23A"></path></svg></span>
+          <span class="operateBtn" @click.stop="add(row)"><svg t="1666277092401" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4445" width="16" height="16"><path d="M924.8 337.6c-22.6-53.4-54.9-101.3-96-142.4-41.1-41.1-89-73.4-142.4-96C631.1 75.8 572.5 64 512 64S392.9 75.8 337.6 99.2c-53.4 22.6-101.3 54.9-142.4 96-41.1 41.1-73.4 89-96 142.4C75.8 392.9 64 451.5 64 512s11.8 119.1 35.2 174.4c22.6 53.4 54.9 101.3 96 142.4 41.1 41.1 89 73.4 142.4 96C392.9 948.2 451.5 960 512 960s119.1-11.8 174.4-35.2c53.4-22.6 101.3-54.9 142.4-96 41.1-41.1 73.4-89 96-142.4C948.2 631.1 960 572.5 960 512s-11.8-119.1-35.2-174.4zM758.63 534.63c-5.79 5.79-13.79 9.37-22.63 9.37H288c-17.67 0-32-14.33-32-32 0-8.84 3.58-16.84 9.37-22.63S279.16 480 288 480h448c17.67 0 32 14.33 32 32 0 8.84-3.58 16.84-9.37 22.63z" p-id="4446" fill="#E6A23C"></path></svg></span>
+          <span class="operateBtn" @click.stop="remove(row)"><svg t="1666277005829" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4215" width="16" height="16"><path d="M924.8 337.6c-22.6-53.4-54.9-101.3-96-142.4-41.1-41.1-89-73.4-142.4-96C631.1 75.8 572.5 64 512 64S392.9 75.8 337.6 99.2c-53.4 22.6-101.3 54.9-142.4 96-41.1 41.1-73.4 89-96 142.4C75.8 392.9 64 451.5 64 512s11.8 119.1 35.2 174.4c22.6 53.4 54.9 101.3 96 142.4 41.1 41.1 89 73.4 142.4 96C392.9 948.2 451.5 960 512 960s119.1-11.8 174.4-35.2c53.4-22.6 101.3-54.9 142.4-96 41.1-41.1 73.4-89 96-142.4C948.2 631.1 960 572.5 960 512s-11.8-119.1-35.2-174.4zM758.63 534.63c-5.79 5.79-13.79 9.37-22.63 9.37H544v192c0 17.67-14.33 32-32 32-8.84 0-16.84-3.58-22.63-9.37S480 744.84 480 736V544H288c-17.67 0-32-14.33-32-32 0-8.84 3.58-16.84 9.37-22.63S279.16 480 288 480h192V288c0-17.67 14.33-32 32-32 8.84 0 16.84 3.58 22.63 9.37S544 279.16 544 288v192h192c17.67 0 32 14.33 32 32 0 8.84-3.58 16.84-9.37 22.63z" p-id="4216" fill="#F56C6C"></path></svg></span>
+        </span>
+       </virtual-tree>
     </div>
   </div>
 </template>
@@ -46,10 +53,24 @@ export default {
     return {
       data: data,
       defaultCheckedKeys: [],
-      checkboxBg: '',
+      checkboxBg: '#409eff',
+      showCheckbox: true,
+      showOperateBtn: false,
     }
   },
   methods: {
+    update(row) {
+      console.log('更新', row);
+    },
+    add(row) {
+      console.log('添加', row);
+    },
+    remove(row) {
+      console.log('删除', row);
+    },
+    isShowOperateBtn() {
+      this.showOperateBtn = !this.showOperateBtn;
+    },
     selectChange(rows) {
       console.log('select-change', rows)
     },
@@ -66,6 +87,9 @@ export default {
       this.defaultCheckedKeys = [1, 2, 3, 4]
       console.log(this.$refs.virtualTree.getSelect())
     },
+    isShowCheckbox() {
+      this.showCheckbox = !this.showCheckbox;
+    },
     setColor() {
       this.checkboxBg === '#86c734' ? (this.checkboxBg = '#409eff') : (this.checkboxBg = '#86c734')
     },
@@ -80,6 +104,7 @@ export default {
 }
 
 .button {
+  user-select: none;
   border: 1px solid #ddd;
   padding: 2px 10px;
   display: inline-block;
@@ -99,9 +124,14 @@ export default {
 .button:not(:first-child) {
   margin-left: 10px;
 }
+.operateBtn{
 
+}
+.operateBtn:not(:first-child) {
+  margin-left: 10px;
+}
 .demo-container {
-  background: #eee;
+  background: #ffffff;
   width: 800px;
   margin: 10px auto;
 }

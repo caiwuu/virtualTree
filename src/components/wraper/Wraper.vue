@@ -180,6 +180,7 @@ export default {
 </script>
 <style scoped>
 .container {
+  border: 1px solid #e5e5e5;
   display: flex;
 }
 
