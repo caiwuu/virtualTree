@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-10-20 19:15:06
+ * @LastEditTime: 2022-10-20 19:37:37
 -->
 <template>
   <div class="container">
@@ -25,7 +25,8 @@
         :level-indent="20"
         :checkbox-bg="checkboxBg"
         show-checkbox
-        @selectChange="selectChange"
+        @select-change="selectChange"
+        @node-click="nodeClick"
       >
         {{ row.name }}
       </virtual-tree>
@@ -49,8 +50,11 @@ export default {
     }
   },
   methods: {
-    selectChange(list) {
-      console.log(list)
+    selectChange(rows) {
+      console.log('select-change', rows)
+    },
+    nodeClick(row) {
+      console.log('node-click', row)
     },
     getSeleced() {
       console.log(this.$refs.virtualTree.getSelect())

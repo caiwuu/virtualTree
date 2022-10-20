@@ -38,7 +38,7 @@
 
 <script>
 export default {
-  components: {},
+  name: 'base-tree',
   props: {
     levelIndent: {
       type: [Number],
@@ -126,11 +126,11 @@ export default {
      * @param index
      */
     collapseChange(item, index) {
-      item.collapsed = !item.collapsed
-      this.$emit('collapseChange', item, index)
-      if (!this.showCheckbox) {
-        this.$emit('selectChange', item)
+      if (!item.isLeaf) {
+        item.collapsed = !item.collapsed
+        this.$emit('collapseChange', item, index)
       }
+      this.$emit('nodeClick', item)
     },
     /**
      * 生成选中的map数据

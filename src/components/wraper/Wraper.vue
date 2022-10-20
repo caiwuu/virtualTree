@@ -3,7 +3,7 @@
  * @Description: 
  * @CreateDate: 
  * @LastEditor: 
- * @LastEditTime: 2022-10-20 19:13:46
+ * @LastEditTime: 2022-10-20 19:36:15
 -->
 <template>
   <div class="container">
@@ -21,8 +21,9 @@
         :checkbox-bg="checkboxBg"
         checkOnClickNode
         :data="rangeData"
-        @collapseChange="collapseChange"
-        @selectChange="selectChange"
+        @collapse-change="collapseChange"
+        @select-change="selectChange"
+        @node-click="nodeClick"
       >
         <slot v-bind="scope"></slot>
       </tree>
@@ -75,8 +76,11 @@ export default {
     getSelect() {
       return this.$refs.tree.getSelect()
     },
-    selectChange(list) {
-      this.$emit('selectChange', list)
+    selectChange(rows) {
+      this.$emit('select-change', rows)
+    },
+    nodeClick(row) {
+      this.$emit('node-click', row)
     },
     collapseChange(item, index) {
       const { level, collapsed } = item
@@ -136,7 +140,7 @@ export default {
       console.log('请求数据', pageNo, pageSize)
     })
     this.virtuaListEngine.on('rangeChange', ({ start, end }) => {
-      console.log('数据区间改变', start, end)
+      // console.log('数据区间改变', start, end)
       this.start = start
       this.end = end
     })
