@@ -13,21 +13,21 @@
 # 组件文档
 ## props
 
-- config [Object] 配置
-    -  color: 复选框背景颜色；默认 '',
-    -  rowHeight: 每一项的高度；默认 36
-    -  levelIndent:每一项上下间距；默认 20
-    -  showCheckbox:是否展示复选框；默认 false
-    -  height: 组件高度；默认 400,
-    -  width: 组件宽度；默认 800
-
+- checkboxBg: 复选框背景颜色；默认 '',
+- row-height: 每一项的高度；默认 36
+- levelIndent: 一个level缩进间距；默认 20
+- showCheckbox: 是否展示复选框；默认 false
+- sectionSize：虚拟滚动一个缓存片段的大小，默认自动计算，为一屏所能展示的最多行数
+- height: 组件高度；默认 400,
+- width: 组件宽度；默认 800
 - data [Array] 展示数据 
 - defaultCheckedKeys [Array] 默认勾选项的key
 
 
 ## events
 
-- selectChange 当复选框被点击的时候触发 返回选中元素列表
+- select-change 当复选框被点击的时候触发 返回选中元素列表
+- node-click 节点点击回调 返回被点击的节点
 
 # 设计文档
 ## 数据结构
