@@ -3,9 +3,14 @@
  * @Description: 
  * @CreateDate: 
  * @LastEditor: 
- * @LastEditTime: 2022-10-20 16:37:02
+ * @LastEditTime: 2022-10-20 16:40:39
 -->
-# 组件使用文档
+# RUN DEMO
+```bash
+    npm i
+    npm start
+```
+# 组件文档
 ## props
 
 - config <Object> 配置
