@@ -3,8 +3,25 @@
  * @Description: 
  * @CreateDate: 
  * @LastEditor: 
- * @LastEditTime: 2022-10-13 16:50:31
+ * @LastEditTime: 2022-10-20 16:37:02
 -->
+# 组件使用文档
+## props
+
+- config <Object> 配置
+    -  color: 复选框背景颜色；默认 '',
+    -  itemHeight: 每一项的高度；默认 36
+    -  levelDistance:每一项上下间距；默认 20
+    -  showCheckbox:是否展示复选框；默认 false
+    -  height: 组件高度；默认 400,
+    -  width: 组件宽度；默认 800,
+- data <Array> 展示数据 
+- defaultCheckedKeys <Array> 默认勾选项的key
+
+## events
+
+- selectChange 当复选框被点击的时候触发 返回选中元素列表
+
 # 设计文档
 ## 数据结构
 ```javascript
@@ -62,5 +79,4 @@ if (this.end + this.oneClientRowSize > this.pageSize * this.pageNo) {
 ```
 
 ### TODO
-
-模拟滚动条：滚动事件还是用原生，但是原生UI表现的太真实了，非全量的时候数据一页一页从服务端来的，所以滚动条会非连续的长度变化，我们需要伪装一个滚动条，模拟滚动进度。
+交互细节优化;UI优化;超大数据结构设计(转化和解析算法)

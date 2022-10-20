@@ -3,11 +3,9 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-09-28 10:19:33
+ * @LastEditTime: 2022-10-20 16:37:58
  */
 import { createApp } from 'vue'
 import App from './App.vue'
-import { data } from './mock'
-console.log(data)
 
 createApp(App).mount('#app')
