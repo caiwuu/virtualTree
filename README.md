@@ -15,8 +15,8 @@
 
 - config [Object] 配置
     -  color: 复选框背景颜色；默认 '',
-    -  itemHeight: 每一项的高度；默认 36
-    -  levelDistance:每一项上下间距；默认 20
+    -  rowHeight: 每一项的高度；默认 36
+    -  levelIndent:每一项上下间距；默认 20
     -  showCheckbox:是否展示复选框；默认 false
     -  height: 组件高度；默认 400,
     -  width: 组件宽度；默认 800

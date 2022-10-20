@@ -1,20 +1,32 @@
 <template>
   <div>
-    <div ref="zgTree" class="zg-tree" v-for="(item, index) in list" :key="item.position" :style="{
-      paddingLeft: item.level * levelDistance + 'px',
-      height: itemHeight + 'px',
-    }" @click="collapseChange(item, index)">
+    <div
+      ref="zgTree"
+      class="zg-tree"
+      v-for="(item, index) in list"
+      :key="item.position"
+      :style="{
+        paddingLeft: item.level * levelIndent + 'px',
+        height: rowHeight + 'px',
+      }"
+      @click="collapseChange(item, index)"
+    >
       <div class="zg-triangle">
         <div class="zg-triangle-right" v-if="item.collapsed && !item.isLeaf"></div>
         <div class="zg-triangle-bottom" v-if="!item.collapsed && !item.isLeaf"></div>
       </div>
       <label class="zg-checkbox" v-if="showCheckbox" @click.stop="selectChange(item, index)">
-        <span :class="{
-          'zg-checkbox__input': true,
-          'is-indeterminate': item.checkType === 1,
-          'is-checked': item.checkType === 2,
-        }">
-          <span class="zg-checkbox__inner" :style="{ backgroundColor: color, borderColor: color }"></span>
+        <span
+          :class="{
+            'zg-checkbox__input': true,
+            'is-indeterminate': item.checkType === 1,
+            'is-checked': item.checkType === 2,
+          }"
+        >
+          <span
+            class="zg-checkbox__inner"
+            :style="{ backgroundColor: checkboxBg, borderColor: checkboxBg }"
+          ></span>
         </span>
       </label>
       <div class="zg-content">
@@ -28,15 +40,15 @@
 export default {
   components: {},
   props: {
-    levelDistance: {
+    levelIndent: {
       type: [Number],
-      default: 10,
+      default: 20,
     },
     showCheckbox: {
       type: [Boolean],
       default: true,
     },
-    itemHeight: {
+    rowHeight: {
       type: [Number],
       default: 36,
     },
@@ -52,7 +64,7 @@ export default {
       type: Array,
       default: () => [],
     },
-    color: {
+    checkboxBg: {
       type: String,
       default: '',
     },
