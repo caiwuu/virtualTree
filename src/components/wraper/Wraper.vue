@@ -132,7 +132,7 @@ export default {
       console.log(partialData);
     })
     this.virtuaListEngine.on('rangeChange', ({ start, end }) => {
-      // console.log('数据区间改变', start, end)
+      console.log('数据区间改变', start, end)
       this.start = start
       this.end = end
     })

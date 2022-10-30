@@ -64,6 +64,7 @@ const staticData = [
   },
 ]
 const mockData = []
+// 随机生成 递归
 function genItems(startId, pid, count, level, parent) {
   let res
   if (level === 4) {
@@ -100,9 +101,70 @@ function genItems(startId, pid, count, level, parent) {
   }
   return res
 }
-const res = genItems(1 /*起始id*/, 0 /*父id*/, 10 /*子集最大数量*/, 0 /*级别*/, {} /*父级*/)
-mockData.push(...res)
+
+function genTreeData() {
+  let res = []
+  let id = 0
+  let temp1, temp2, temp3
+  for (let index1 = 0; index1 < 10; index1++) {
+    temp1 = Mock.mock({
+      [`list|1`]: [
+        {
+          'id|+1': id,
+          pid: 0,
+          level: 1,
+          isLeaf: false,
+          collapsed: false,
+          name: `${index1 + 1}`,
+          position: `${id}`,
+        },
+      ],
+    }).list
+    res.push(temp1)
+    id++
+    for (let index2 = 0; index2 < 100; index2++) {
+      temp2 = Mock.mock({
+        [`list|1`]: [
+          {
+            'id|+1': id,
+            pid: index1,
+            level: 2,
+            isLeaf: false,
+            collapsed: false,
+            name: `${temp1.name}-${index2 + 1}`,
+            position: `${temp1.position}-${id}`,
+          },
+        ],
+      }).list
+      res.push(temp2)
+      id++
+      for (let index3 = 0; index3 < 10; index3++) {
+        temp3 = Mock.mock({
+          [`list|1`]: [
+            {
+              'id|+1': id,
+              pid: index2,
+              level: 3,
+              isLeaf: true,
+              collapsed: false,
+              name: `${temp2.name}-${index3 + 1}`,
+              position: `${temp2.position}-${id}`,
+            },
+          ],
+        }).list
+        res.push(temp3)
+        id++
+      }
+    }
+  }
+  console.log('数据大小：', res.length)
+  return res
+}
+
+// const res = genItems(1 /*起始id*/, 0 /*父id*/, 10 /*子集最大数量*/, 0 /*级别*/, {} /*父级*/)
+const res = genTreeData()
+// mockData.push(...res)
 // const data = staticData
-const data = mockData
-console.log(data)
+const data = res
+// console.log(data)
 export { data }

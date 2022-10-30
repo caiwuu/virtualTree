@@ -16,8 +16,8 @@
       <!-- <span class="button" @click="setColor">设置颜色</span> -->
     </div>
     <div class="demo-container">
-      <virtual-tree :default-checked-keys="defaultCheckedKeys" ref="virtualTree" v-slot="{ row }" :height="400" :width="800" :row-height="36" :data="dataFn" :level-indent="20"
-        :checkbox-bg="checkboxBg" :show-checkbox="showCheckbox" @select-change="selectChange" @node-click="nodeClick">
+      <virtual-tree :default-checked-keys="defaultCheckedKeys" ref="virtualTree" v-slot="{ row }" :height="400" :width="800" :row-height="36" :data="data" :level-indent="20" :checkbox-bg="checkboxBg"
+        :show-checkbox="showCheckbox" @select-change="selectChange" @node-click="nodeClick">
         {{ row.name }}
         <span v-if="showOperateBtn">
           <span class="operateBtn" @click.stop="update(row)"><svg t="1666276805678" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4033" width="16"
