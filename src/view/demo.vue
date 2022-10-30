@@ -48,13 +48,15 @@
 </template>
 
 <script>
-import VirtualTree from '@/components/wraper/Wraper.vue'
+// import VirtualTree from '@/components/wraper/Wraper.vue'
+// import VirtualTree from '../../dist/virtualTree.umd.js'
+// console.log(VirtualTree);
 import { data } from '@/mock'
 export default {
   name: 'tree-demo',
-  components: {
-    VirtualTree,
-  },
+  // components: {
+  //   VirtualTree,
+  // },
   data () {
     return {
       data: data,

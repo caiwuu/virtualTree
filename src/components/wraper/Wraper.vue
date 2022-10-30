@@ -25,6 +25,9 @@ import uuid from '@/utils/uuid'
 import search from '@/utils/search'
 
 export default {
+  install: function (Vue) {
+    Vue.component(this.name, this);
+  },
   name: 'VirtualTree',
   props: {
     // 静态全量数据模式
@@ -76,11 +79,13 @@ export default {
         for (let idx = activeIdx + 1; idx < this.activeData.length; idx++) {
           const ele = this.activeData[idx]
           if (level >= ele.level) {
-            this.activeData.splice(activeIdx + 1, idx - activeIdx - 1)
+            console.time('折叠')
+            this.activeData = this.activeData.slice(0, activeIdx + 1).concat(this.activeData.slice(idx))
+            console.timeEnd('折叠');
             return
           }
         }
-        this.activeData.splice(activeIdx + 1, this.activeData.length - activeIdx - 1)
+        this.activeData = this.activeData.slice(0, activeIdx + 1)
       } else {
         // 展开行为
         // 在总数据池中的位置
@@ -93,11 +98,14 @@ export default {
           const ele = this.allData[idx]
           let lastQueueEle = queue[queue.length - 1]
           if (level >= ele.level) {
-            this.activeData.splice(activeIdx + 1, 0, ...res)
+            console.time('展开')
+            this.activeData = this.activeData.slice(0, activeIdx + 1).concat(res, this.activeData.slice(activeIdx + 1))
+            console.timeEnd('展开');
             return
           }
           if (lastQueueEle.level >= ele.level) {
-            queue = queue.slice(0, ele.level)
+            const idx = queue.findIndex(i => i.level === ele.level)
+            queue = queue.slice(0, idx)
             lastQueueEle = queue[queue.length - 1]
           }
           if (!lastQueueEle.collapsed) {
@@ -105,7 +113,7 @@ export default {
             if (lastQueueEle.level < ele.level) queue.push(ele)
           }
         }
-        this.activeData.splice(activeIdx + 1, 0, ...res)
+        this.activeData = this.activeData.slice(0, activeIdx + 1).concat(res, this.activeData.slice(activeIdx + 1))
       }
     },
   },

@@ -4,11 +4,12 @@
   "private": true,
   "scripts": {
     "start": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "build": "vue-cli-service build --target lib --name virtualTree lib/lib.js",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
     "core-js": "^3.8.3",
+    "element-plus": "^2.2.19",
     "mitt": "^3.0.0",
     "vue": "^3.2.13"
   },

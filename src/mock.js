@@ -25,7 +25,7 @@ const staticData = [
     id: 2,
     isLeaf: false,
     level: 1,
-    name: '1-0',
+    name: '1-1',
     pid: 1,
     position: '1-2',
   },
@@ -36,7 +36,7 @@ const staticData = [
     id: 3,
     isLeaf: false,
     level: 2,
-    name: '1-0-0',
+    name: '1-1-1',
     pid: 1,
     position: '1-2-3',
   },
@@ -45,9 +45,9 @@ const staticData = [
     collapsed: false,
     data: {},
     id: 4,
-    isLeaf: false,
+    isLeaf: true,
     level: 3,
-    name: '1-0-0-0',
+    name: '1-1-1-1',
     pid: 1,
     position: '1-2-3-4',
   },
@@ -57,10 +57,32 @@ const staticData = [
     data: {},
     id: 5,
     isLeaf: false,
-    level: 1,
-    name: '1-1',
+    level: 2,
+    name: '1-1-2',
     pid: 1,
-    position: '1-5',
+    position: '1-2-5',
+  },
+  {
+    childCount: 2,
+    collapsed: false,
+    data: {},
+    id: 6,
+    isLeaf: true,
+    level: 3,
+    name: '1-1-2-1',
+    pid: 1,
+    position: '1-2-5-6',
+  },
+  {
+    childCount: 2,
+    collapsed: false,
+    data: {},
+    id: 7,
+    isLeaf: true,
+    level: 1,
+    name: '1-2',
+    pid: 1,
+    position: '1-7',
   },
 ]
 const mockData = []
@@ -104,7 +126,7 @@ function genItems(startId, pid, count, level, parent) {
 
 function genTreeData() {
   let res = []
-  let id = 0
+  let id = 1
   let temp1, temp2, temp3
   for (let index1 = 0; index1 < 10; index1++) {
     temp1 = Mock.mock({
@@ -112,7 +134,7 @@ function genTreeData() {
         {
           'id|+1': id,
           pid: 0,
-          level: 1,
+          level: 0,
           isLeaf: false,
           collapsed: false,
           name: `${index1 + 1}`,
@@ -127,8 +149,8 @@ function genTreeData() {
         [`list|1`]: [
           {
             'id|+1': id,
-            pid: index1,
-            level: 2,
+            pid: temp1.id,
+            level: 1,
             isLeaf: false,
             collapsed: false,
             name: `${temp1.name}-${index2 + 1}`,
@@ -143,8 +165,8 @@ function genTreeData() {
           [`list|1`]: [
             {
               'id|+1': id,
-              pid: index2,
-              level: 3,
+              pid: temp2.id,
+              level: 2,
               isLeaf: true,
               collapsed: false,
               name: `${temp2.name}-${index3 + 1}`,
@@ -157,14 +179,13 @@ function genTreeData() {
       }
     }
   }
-  console.log('数据大小：', res.length)
+  console.log('数据大小：', res.length, res)
   return res
 }
 
 // const res = genItems(1 /*起始id*/, 0 /*父id*/, 10 /*子集最大数量*/, 0 /*级别*/, {} /*父级*/)
 const res = genTreeData()
-// mockData.push(...res)
-// const data = staticData
+// const res = staticData
 const data = res
 // console.log(data)
 export { data }
