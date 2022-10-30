@@ -49,14 +49,14 @@
 
 <script>
 // import VirtualTree from '@/components/wraper/Wraper.vue'
-// import VirtualTree from '../../dist/virtualTree.umd.js'
-// console.log(VirtualTree);
+import { VirtualTree1 } from '../../dist/virtualTree.umd.js'
+console.log(VirtualTree1);
 import { data } from '@/mock'
 export default {
   name: 'tree-demo',
-  // components: {
-  //   VirtualTree,
-  // },
+  components: {
+    VirtualTree: VirtualTree1,
+  },
   data () {
     return {
       data: data,
