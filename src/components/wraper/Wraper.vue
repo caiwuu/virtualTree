@@ -3,7 +3,7 @@
  * @Description: 
  * @CreateDate: 
  * @LastEditor: 
- * @LastEditTime: 2022-10-31 14:46:13
+ * @LastEditTime: 2022-10-31 17:53:36
 -->
 <template>
   <div class="container">
@@ -64,7 +64,8 @@ export default {
   },
   methods: {
     getSelect() {
-      return this.$refs.tree.getSelect()
+      const ids = this.$refs.tree.getSelect()
+      return ids.map(idx => this.allData.find(ele => ele.id === idx))
     },
     selectChange(rows) {
       this.$emit('select-change', rows)

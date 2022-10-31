@@ -93,7 +93,7 @@ export default {
      * 获取当前选项
      */
     getSelect() {
-      return this.selectList.map(idx => this.list.find(ele => ele.id === idx))
+      return this.selectList
     },
     /**
      * 设置选中
