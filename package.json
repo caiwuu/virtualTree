@@ -1,19 +1,22 @@
 {
-  "name": "app",
-  "version": "0.1.0",
-  "private": true,
+  "name": "virtual-tree",
+  "version": "1.0.0.0",
   "scripts": {
     "start": "vue-cli-service serve",
     "build": "vue-cli-service build --target lib --name virtualTree lib/lib.js",
     "lint": "vue-cli-service lint"
   },
+  "main": "dist/virtualTree.umd.min.js",
+  "files": [
+    "dist/",
+    "README.md"
+  ],
   "dependencies": {
-    "core-js": "^3.8.3",
-    "element-plus": "^2.2.19",
-    "mitt": "^3.0.0",
-    "vue": "^3.2.13"
+    "mitt": "^3.0.0"
   },
   "devDependencies": {
+    "core-js": "^3.8.3",
+    "vue": "^3.2.13",
     "@babel/core": "^7.12.16",
     "@babel/eslint-parser": "^7.12.16",
     "@vue/cli-plugin-babel": "~5.0.0",
