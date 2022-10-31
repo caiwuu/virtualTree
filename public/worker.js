@@ -7,6 +7,6 @@
  */
 self.onmessage = function (e) {
   //监听主线程发过来的消息
-
+  console.log(e)
   self.postMessage(111) // 将信息发送到主线程上
 }

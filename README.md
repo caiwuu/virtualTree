@@ -72,16 +72,16 @@
 - data [Array] 展示数据 
 - defaultCheckedKeys [Array] 默认勾选项的key
 
+## events
+
+- select-change 当复选框被点击的时候触发 返回选中元素列表
+- node-click 节点点击回调 返回被点击的节点
+
 # RUN DEMO
 ```bash
     npm i
     npm start
 ```
-
-## events
-
-- select-change 当复选框被点击的时候触发 返回选中元素列表
-- node-click 节点点击回调 返回被点击的节点
 
 # 设计文档
 ## 数据结构
