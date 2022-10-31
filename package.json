@@ -1,6 +1,6 @@
 {
   "name": "virtual-tree",
-  "version": "1.0.0.0",
+  "version": "1.0.0",
   "scripts": {
     "start": "vue-cli-service serve",
     "build": "vue-cli-service build --target lib --name virtualTree lib/lib.js",
