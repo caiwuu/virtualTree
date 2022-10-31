@@ -1,5 +1,5 @@
 {
-  "name": "virtual-tree",
+  "name": "zg-virtual-tree",
   "version": "1.0.0",
   "scripts": {
     "start": "vue-cli-service serve",
@@ -15,16 +15,17 @@
     "mitt": "^3.0.0"
   },
   "devDependencies": {
-    "core-js": "^3.8.3",
-    "vue": "^3.2.13",
     "@babel/core": "^7.12.16",
     "@babel/eslint-parser": "^7.12.16",
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-eslint": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
+    "core-js": "^3.8.3",
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
-    "mockjs": "^1.1.0"
+    "mockjs": "^1.1.0",
+    "vue": "^3.2.13",
+    "zg-virtual-tree": "^1.0.0"
   },
   "eslintConfig": {
     "root": true,

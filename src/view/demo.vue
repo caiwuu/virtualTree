@@ -3,21 +3,27 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-10-31 10:29:18
+ * @LastEditTime: 2022-10-31 15:55:19
 -->
 <template>
   <div class="container">
+    <div v-if="gening" class="mask">mock数据生成中....</div>
     <div class="button-container">
+      <span :class="l === 0 ? 'btn-active' : 'btn'" @click="() => setDataSize(0)">1000数据</span>
+      <span :class="l === 1 ? 'btn-active' : 'btn'" @click="() => setDataSize(1)">10000数据</span>
+      <span :class="l === 2 ? 'btn-active' : 'btn'" @click="() => setDataSize(2)">100000数据</span>
+      <span :class="l === 3 ? 'btn-active' : 'btn'" @click="() => setDataSize(3)">1000000数据</span>
+    </div>
+    <div class="button-container" style="margin-top: 10px;">
       <span class="button" @click="getSeleced">获取当前选中</span>
       <span class="button" @click="selectByIds">设置勾选</span>
       <span class="button" @click="clearSelect">取消勾选</span>
       <span class="button" @click="isShowCheckbox">隐藏展示勾选</span>
       <span class="button" @click="isShowOperateBtn">隐藏展示操作</span>
-      <!-- <span class="button" @click="setColor">设置颜色</span> -->
     </div>
     <div class="demo-container">
-      <virtual-tree :default-checked-keys="defaultCheckedKeys" ref="virtualTree" v-slot="{ row }" :height="400"
-        :width="800" :row-height="36" :data="data" :level-indent="20" :checkbox-bg="checkboxBg"
+      <virtual-tree :key="key" :default-checked-keys="defaultCheckedKeys" ref="virtualTree" v-slot="{ row }"
+        :height="400" :width="800" :row-height="24" :data="data" :level-indent="20" :checkbox-bg="checkboxBg"
         :show-checkbox="showCheckbox" @select-change="selectChange" @node-click="nodeClick">
         {{ row.name }}
         <span v-if="showOperateBtn">
@@ -49,10 +55,9 @@
 </template>
 
 <script>
-// import VirtualTree from '@/components/wraper/Wraper.vue'
-import { VirtualTree } from '../../dist/virtualTree.umd.js'
-console.log(VirtualTree)
-import { data } from '@/mock'
+import VirtualTree from '@/components/wraper/Wraper.vue'
+// import { VirtualTree } from 'zg-virtual-tree'
+import { genTreeData } from '@/mock'
 export default {
   name: 'tree-demo',
   components: {
@@ -60,14 +65,39 @@ export default {
   },
   data() {
     return {
-      data: data,
+      gening: true,
+      l: 0,
+      key: 112,
+      data0: [],
+      data1: [],
+      data2: [],
+      data3: [],
+      data: genTreeData(1, 10, 100),
       defaultCheckedKeys: [],
       checkboxBg: '',
       showCheckbox: true,
       showOperateBtn: false,
     }
   },
+  created() {
+    this.gening = true
+    setTimeout(() => {
+      this.mock()
+    }, 500)
+  },
   methods: {
+    mock() {
+      this.data0 = genTreeData(1, 10, 100)
+      this.data1 = genTreeData(10, 10, 100)
+      this.data2 = genTreeData(10, 100, 100)
+      this.data3 = genTreeData(10, 100, 1000)
+      this.gening = false
+    },
+    setDataSize(l) {
+      this.l = l
+      this.data = this[`data${l}`]
+      this.key++
+    },
     dataFn(pageNo, pageSize) {
       console.log(pageNo, pageSize)
       return data
@@ -92,6 +122,7 @@ export default {
     },
     getSeleced() {
       console.log(this.$refs.virtualTree.getSelect())
+      alert(JSON.stringify(this.$refs.virtualTree.getSelect()))
     },
     clearSelect() {
       this.defaultCheckedKeys = []
@@ -116,7 +147,8 @@ export default {
   margin-top: 100px;
 }
 
-.button {
+.button,
+.btn-active {
   user-select: none;
   border: 1px solid #ddd;
   padding: 2px 10px;
@@ -127,6 +159,34 @@ export default {
   border-radius: 4px;
   cursor: pointer;
   background: #409eff;
+  color: #ffffff;
+}
+
+.mask {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  z-index: 1000;
+  background: #333;
+  opacity: 0.7;
+  font-size: 36px;
+  text-align: center;
+  line-height: 100vh;
+  color: #f9f9f9;
+}
+
+.btn {
+  user-select: none;
+  border: 1px solid #ddd;
+  padding: 2px 10px;
+  display: inline-block;
+  height: 26px;
+  line-height: 26px;
+  box-sizing: content-box;
+  border-radius: 4px;
+  cursor: pointer;
+  background: #cacaca;
   color: #ffffff;
 }
 

@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-10-19 16:51:33
+ * @LastEditTime: 2022-10-31 14:24:47
  */
 import Mock from 'mockjs'
 const staticData = [
@@ -124,11 +124,11 @@ function genItems(startId, pid, count, level, parent) {
   return res
 }
 
-function genTreeData() {
+export function genTreeData(l1 = 1, l2 = 10, l3 = 100) {
   let res = []
   let id = 1
   let temp1, temp2, temp3
-  for (let index1 = 0; index1 < 10; index1++) {
+  for (let index1 = 0; index1 < l1; index1++) {
     temp1 = Mock.mock({
       [`list|1`]: [
         {
@@ -144,7 +144,7 @@ function genTreeData() {
     }).list
     res.push(temp1)
     id++
-    for (let index2 = 0; index2 < 100; index2++) {
+    for (let index2 = 0; index2 < l2; index2++) {
       temp2 = Mock.mock({
         [`list|1`]: [
           {
@@ -160,7 +160,7 @@ function genTreeData() {
       }).list
       res.push(temp2)
       id++
-      for (let index3 = 0; index3 < 10; index3++) {
+      for (let index3 = 0; index3 < l3; index3++) {
         temp3 = Mock.mock({
           [`list|1`]: [
             {
@@ -179,13 +179,12 @@ function genTreeData() {
       }
     }
   }
-  console.log('数据大小：', res.length, res)
   return res
 }
 
 // const res = genItems(1 /*起始id*/, 0 /*父id*/, 10 /*子集最大数量*/, 0 /*级别*/, {} /*父级*/)
-const res = genTreeData()
+// const res = genTreeData()
 // const res = staticData
-const data = res
+// const data = res
 // console.log(data)
-export { data }
+// export { data }

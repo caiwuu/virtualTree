@@ -3,14 +3,63 @@
  * @Description: 
  * @CreateDate: 
  * @LastEditor: 
- * @LastEditTime: 2022-10-20 16:48:00
+ * @LastEditTime: 2022-10-31 16:01:06
 -->
-# RUN DEMO
+# 安装
 ```bash
-    npm i
-    npm start
+    npm i zg-virtual-tree --save
 ```
-# 组件文档
+# 使用
+
+## 引入样式
+
+```js
+    // main.js 局部何全局都需要引入样式
+    import 'zg-virtual-tree/dist/virtualTree.css'
+```
+## 全局使用
+
+```js
+    // main.js
+    import 'zg-virtual-tree/dist/virtualTree.css'
+    import { VirtualTree } from 'zg-virtual-tree'
+    createApp(App).use(VirtualTree).mount('#app')
+```
+
+## 局部使用
+
+```js
+    // demo.vue
+
+    // html
+    <virtual-tree 
+        :key="key" 
+        :default-checked-keys="defaultCheckedKeys" 
+        ref="virtualTree" 
+        v-slot="{ row }"
+        :height="400" 
+        :width="800" 
+        :row-height="24" 
+        :data="data" 
+        :level-indent="20" 
+        :checkbox-bg="checkboxBg"
+        :show-checkbox="showCheckbox" 
+        @select-change="selectChange" 
+        @node-click="nodeClick"
+    >
+    .....
+    </virtual-tree>
+    // js
+    import { VirtualTree } from 'zg-virtual-tree'
+    export default {
+        name: 'tree-demo',
+        components: {
+            VirtualTree,
+        },
+        ....
+    }
+```
+
 ## props
 
 - checkboxBg: 复选框背景颜色；默认 '',
@@ -23,6 +72,11 @@
 - data [Array] 展示数据 
 - defaultCheckedKeys [Array] 默认勾选项的key
 
+# RUN DEMO
+```bash
+    npm i
+    npm start
+```
 
 ## events
 
