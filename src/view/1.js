@@ -27,3 +27,10 @@ for (let index = 0; index < 1000000; index++) {
 }
 console.timeEnd('qq')
 // res = res.slice(0, 450000).concat([1, 2, 3, 4, 5555, 6666], res.slice(450000))
+
+// function topAdd($0) {
+//   $0.scrollTop++
+//   setTimeout(() => {
+//     topAdd($0)
+//   }, 10)
+// }

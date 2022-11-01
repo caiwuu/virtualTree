@@ -8,10 +8,8 @@
 <template>
   <div class="container">
     <div :id="uuid" class="tree-wraper" :style="style">
-      <tree :default-checked-keys="defaultCheckedKeys" ref="tree" v-slot="{ ...scope }" :style="innerStyle"
-        :height="height" :width="height" :row-height="rowHeight" :level-indent="levelIndent"
-        :show-checkbox="showCheckbox" :checkbox-bg="checkboxBg" checkOnClickNode :data="rangeData"
-        @collapse-change="collapseChange" @select-change="selectChange" @node-click="nodeClick">
+      <tree :default-checked-keys="defaultCheckedKeys" ref="tree" v-slot="{ ...scope }" :style="innerStyle" :height="height" :width="height" :row-height="rowHeight" :level-indent="levelIndent"
+        :show-checkbox="showCheckbox" :checkbox-bg="checkboxBg" checkOnClickNode :data="rangeData" @collapse-change="collapseChange" @select-change="selectChange" @node-click="nodeClick">
         <slot v-bind="scope"></slot>
       </tree>
     </div>
@@ -47,7 +45,7 @@ export default {
     sectionSize: Number,
     checkboxBg: String,
   },
-  data() {
+  data () {
     return {
       allData: [], // 总数据池
       activeData: [], // 活数据池
@@ -62,20 +60,20 @@ export default {
     }
   },
   methods: {
-    getSelect() {
+    getSelect () {
       const ids = this.$refs.tree.getSelect()
       console.time('getSelect')
       const selectedItem = ids.map(idx => this.allData.find(ele => ele.id === idx))
       console.timeEnd('getSelect');
       return selectedItem
     },
-    selectChange(rows) {
+    selectChange (rows) {
       this.$emit('select-change', rows)
     },
-    nodeClick(row) {
+    nodeClick (row) {
       this.$emit('node-click', row)
     },
-    collapseChange(item, index) {
+    collapseChange (item, index) {
       const { level, collapsed } = item
       const activeIdx = index + this.start
       // 折叠行为
@@ -124,7 +122,8 @@ export default {
       }
     },
   },
-  created() {
+  created () {
+    console.log("created");
     // 静态数据
     if (this.isStatic) {
       this.allData = this.data
@@ -157,30 +156,33 @@ export default {
       this.end = end
     })
   },
-  mounted() {
+  beforeUnmount () {
+    this.virtuaListEngine.destroy()
+  },
+  mounted () {
     this.virtuaListEngine.run((ve) => {
       this.$refs.scrollBar.connect(ve)
     })
   },
   watch: {
-    dataSize(nv) {
+    dataSize (nv) {
       this.virtuaListEngine && this.virtuaListEngine.emit('dataSize', nv)
     },
   },
   computed: {
-    dataSize() {
+    dataSize () {
       return this.activeData.length
     },
-    isStatic() {
+    isStatic () {
       return typeof this.data !== 'function'
     },
-    style() {
+    style () {
       return `height:${this.height}px;overflow: auto;width:${this.width}px;`
     },
-    innerStyle() {
+    innerStyle () {
       return `transform: translateY(${this.start * this.rowHeight}px);`
     },
-    rangeData() {
+    rangeData () {
       // 方案 1
       // return this.activeData.slice(this.start, this.end + 1)
       // 方案 2

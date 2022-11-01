@@ -33,6 +33,7 @@ export default class {
   }
   // 启动引擎 需要在container挂载之后启动
   run(fn) {
+    console.log(emitter)
     this.initContainerDom()
     // 校验启动参数
     const oneScreenHoldingSize = Math.ceil(this.container.clientHeight / this.rowHeight)
@@ -54,12 +55,14 @@ export default class {
     this.emit('pageChange', { pageNo: this.pageNo, pageSize: this.sectionSize * 4 })
   }
   scrollHander(e) {
+    console.log('scrollHander')
     const forwardCriticalPoint = Math.ceil((this.start + this.end) / 2) // 指针前进临界点
     const backCriticalPoint = forwardCriticalPoint - this.sectionSize // 指针后退临界点
     if (e.target.scrollTop > forwardCriticalPoint * this.rowHeight) {
+      console.log('++')
       this.setRange(this.start + this.sectionSize)
-    }
-    if (e.target.scrollTop < backCriticalPoint * this.rowHeight && this.start > 0) {
+    } else if (e.target.scrollTop < backCriticalPoint * this.rowHeight && this.start > 0) {
+      console.log('--')
       this.setRange(this.start - this.sectionSize)
     }
     if (this.end + this.sectionSize > this.sectionSize * 4 * this.pageNo) {
@@ -68,6 +71,10 @@ export default class {
       this.pageChange()
     }
     this.emit('scroll', e.target.scrollTop)
+  }
+  destroy() {
+    this.container.removeEventListener('scroll', this.scrollHander.bind(this))
+    emitter.all.clear()
   }
   // 监听滚动条
   listenScroll() {
