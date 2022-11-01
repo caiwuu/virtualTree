@@ -3,13 +3,15 @@
  * @Description: 
  * @CreateDate: 
  * @LastEditor: 
- * @LastEditTime: 2022-10-31 17:53:36
+ * @LastEditTime: 2022-11-01 13:09:33
 -->
 <template>
   <div class="container">
     <div :id="uuid" class="tree-wraper" :style="style">
-      <tree :default-checked-keys="defaultCheckedKeys" ref="tree" v-slot="{ ...scope }" :style="innerStyle" :height="height" :width="height" :row-height="rowHeight" :level-indent="levelIndent"
-        :show-checkbox="showCheckbox" :checkbox-bg="checkboxBg" checkOnClickNode :data="rangeData" @collapse-change="collapseChange" @select-change="selectChange" @node-click="nodeClick">
+      <tree :default-checked-keys="defaultCheckedKeys" ref="tree" v-slot="{ ...scope }" :style="innerStyle"
+        :height="height" :width="height" :row-height="rowHeight" :level-indent="levelIndent"
+        :show-checkbox="showCheckbox" :checkbox-bg="checkboxBg" checkOnClickNode :data="rangeData"
+        @collapse-change="collapseChange" @select-change="selectChange" @node-click="nodeClick">
         <slot v-bind="scope"></slot>
       </tree>
     </div>
@@ -45,7 +47,7 @@ export default {
     sectionSize: Number,
     checkboxBg: String,
   },
-  data () {
+  data() {
     return {
       allData: [], // 总数据池
       activeData: [], // 活数据池
@@ -60,27 +62,28 @@ export default {
     }
   },
   methods: {
-    getSelect () {
+    getSelect() {
       const ids = this.$refs.tree.getSelect()
       console.time('getSelect')
       const selectedItem = ids.map(idx => this.allData.find(ele => ele.id === idx))
       console.timeEnd('getSelect');
       return selectedItem
     },
-    selectChange (rows) {
+    selectChange(rows) {
       this.$emit('select-change', rows)
     },
-    nodeClick (row) {
+    nodeClick(row) {
       this.$emit('node-click', row)
     },
-    collapseChange (item, index) {
+    collapseChange(item, index) {
       const { level, collapsed } = item
       const activeIdx = index + this.start
       // 折叠行为
       if (collapsed) {
         item.collapsed = true
         for (let idx = activeIdx + 1; idx < this.activeData.length; idx++) {
-          const ele = this.activeData[idx]
+          // const ele = this.activeData[idx] // 方案 1
+          const ele = this.allData[this.activeData[idx]] // 方案2
           if (level >= ele.level) {
             console.time('折叠')
             this.activeData = this.activeData.slice(0, activeIdx + 1).concat(this.activeData.slice(idx))
@@ -112,7 +115,8 @@ export default {
             lastQueueEle = queue[queue.length - 1]
           }
           if (!lastQueueEle.collapsed) {
-            res.push(ele)
+            // res.push(ele) // 方案 1
+            res.push(idx) // 方案 2
             if (lastQueueEle.level < ele.level) queue.push(ele)
           }
         }
@@ -120,11 +124,16 @@ export default {
       }
     },
   },
-  created () {
+  created() {
     // 静态数据
     if (this.isStatic) {
       this.allData = this.data
-      this.activeData = [...this.allData]
+      // 方案 1
+      // this.activeData = [...this.allData]
+      // 方案 2
+      for (let index = 0; index < this.allData.length; index++) {
+        this.activeData.push(index)
+      }
     }
 
     this.virtuaListEngine = new VirtualListEngine({
@@ -148,31 +157,34 @@ export default {
       this.end = end
     })
   },
-  mounted () {
+  mounted() {
     this.virtuaListEngine.run((ve) => {
       this.$refs.scrollBar.connect(ve)
     })
   },
   watch: {
-    dataSize (nv) {
+    dataSize(nv) {
       this.virtuaListEngine && this.virtuaListEngine.emit('dataSize', nv)
     },
   },
   computed: {
-    dataSize () {
+    dataSize() {
       return this.activeData.length
     },
-    isStatic () {
+    isStatic() {
       return typeof this.data !== 'function'
     },
-    style () {
+    style() {
       return `height:${this.height}px;overflow: auto;width:${this.width}px;`
     },
-    innerStyle () {
+    innerStyle() {
       return `transform: translateY(${this.start * this.rowHeight}px);`
     },
-    rangeData () {
-      return this.activeData.slice(this.start, this.end + 1)
+    rangeData() {
+      // 方案 1
+      // return this.activeData.slice(this.start, this.end + 1)
+      // 方案 2
+      return this.activeData.slice(this.start, this.end + 1).map(i => this.allData[i])
     },
   },
   components: {
