@@ -78,7 +78,7 @@ export default class {
   }
   // 监听滚动条
   listenScroll() {
-    this.container.addEventListener('scroll', this.scrollHander.bind(this))
+    // this.container.addEventListener('scroll', this.scrollHander.bind(this))
   }
   // 挂载之后初始化容器dom
   initContainerDom() {
