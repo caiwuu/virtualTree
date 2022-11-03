@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-11-01 12:26:47
+ * @LastEditTime: 2022-11-03 13:23:21
 -->
 <template>
   <div class="container">
@@ -90,7 +90,7 @@ export default {
       this.data0 = genTreeData(1, 10, 100)
       this.data1 = genTreeData(10, 10, 100)
       this.data2 = genTreeData(10, 100, 100)
-      this.data3 = genTreeData(10, 100, 10)
+      this.data3 = genTreeData(10, 100, 1000)
       this.gening = false
       // this.setDataSize(this.l)
     },
