@@ -3,7 +3,7 @@
  * @Description: 
  * @CreateDate: 
  * @LastEditor: 
- * @LastEditTime: 2022-11-07 17:19:36
+ * @LastEditTime: 2022-11-07 17:40:49
 -->
 <template>
   <div class="container">
@@ -50,6 +50,7 @@ export default {
   },
   data() {
     return {
+      dataSize: 1,
       rangeData: [],
       allData: [], // 总数据池
       activeData: [], // 活数据池
@@ -137,6 +138,7 @@ export default {
     },
     setRangeData() {
       console.log("setRangeData");
+      this.dataSize = activeIndexs.length
       this.rangeData = activeIndexs.slice(this.start, this.end + 1).map(i => this.allData[i])
     }
   },
@@ -195,10 +197,6 @@ export default {
     }
   },
   computed: {
-    dataSize() {
-      // return this.activeData.length
-      return activeIndexs.length
-    },
     isStatic() {
       return typeof this.data !== 'function'
     },
