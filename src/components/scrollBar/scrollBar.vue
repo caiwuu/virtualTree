@@ -5,7 +5,7 @@
 </template>
 
 <script>
-function pauseEvent (e) {
+function pauseEvent(e) {
   if (e.stopPropagation) e.stopPropagation()
   if (e.preventDefault) e.preventDefault()
   e.cancelBubble = true
@@ -13,7 +13,7 @@ function pauseEvent (e) {
   return false
 }
 export default {
-  data () {
+  data() {
     return {
       top: 0,
       minHeight: 15,
@@ -28,19 +28,19 @@ export default {
     },
   },
   computed: {
-    style () {
+    style() {
       return `top:${this.top}px;height: ${this.scrollHeight}px;`
     },
-    totalHeight () {
+    totalHeight() {
       return this.ve.dataSize * this.ve.rowHeight
     },
-    trackHeight () {
+    trackHeight() {
       return this.height - this.minHeight
     },
   },
   methods: {
     // 连接 计算引擎VirtualEngine
-    connect (ve) {
+    connect(ve) {
       this.ve = ve
       this.updateSize()
       this.ve.on('scroll', (top) => {
@@ -52,7 +52,7 @@ export default {
       })
     },
     // 更新模拟滚动条高度
-    updateSize () {
+    updateSize() {
       console.log(this.ve.container.clientHeight, this.totalHeight, this.trackHeight, this.minHeight, this.ve.dataSize);
       if (this.ve.container.clientHeight >= this.totalHeight) {
         this.hidden = true
@@ -63,11 +63,11 @@ export default {
       }
     },
     // 更新模拟滚动条位置
-    updateScrollTop (top) {
+    updateScrollTop(top) {
       this.top = (top * this.trackHeight) / this.totalHeight
     },
     // 根据模拟滚动条的top距离去计算VirtualEngine的 数据区间 和 真实滚动条位置
-    updateVt (top) {
+    updateVt(top) {
       console.log(top);
       const scrollTopRatio = top / this.trackHeight
       const outScreenNum = Math.floor(scrollTopRatio * this.ve.dataSize)
@@ -76,17 +76,17 @@ export default {
       const offsetSection = scrollTopSection - 2
       if (offsetSection >= 0) {
         if (scrollTop > scrollTopSection * this.ve.sectionSize * this.ve.rowHeight) {
-          // this.ve.setRange((offsetSection + 1) * this.ve.sectionSize)
+          this.ve.setRange((offsetSection + 1) * this.ve.sectionSize)
         }
       } else {
         this.ve.setRange(0)
       }
-      setTimeout(() => {
+      Promise.resolve().then(() => {
         this.ve.container.scrollTop = scrollTop
         console.log(this.ve.container.scrollTop, this.ve.container, scrollTop, this.ve.start);
-      }, 0)
+      })
     },
-    handleMouseDown (e) {
+    handleMouseDown(e) {
       const y = typeof e.pageY === 'number' ? e.pageY : e.touches[0].pageY
       this.trackItemTop =
         y - (this.$refs.scrollItem.getBoundingClientRect().top + window.pageYOffset)
@@ -95,14 +95,14 @@ export default {
       window.addEventListener('mousemove', this.handleMouseMove)
       window.addEventListener('mouseup', this.handleMouseUp)
     },
-    handleMouseUp (e) {
+    handleMouseUp(e) {
       pauseEvent(e)
       window.removeEventListener('mousemove', this.handleMouseMove)
       setTimeout(() => {
         this.trackItemTop = this.scrollHeight / 2
       })
     },
-    handleMouseMove (e) {
+    handleMouseMove(e) {
       const y = typeof e.pageY === 'number' ? e.pageY : e.touches[0].pageY
       let top =
         y -

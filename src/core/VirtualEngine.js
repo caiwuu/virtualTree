@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-10-18 13:26:02
+ * @LastEditTime: 2022-11-07 15:36:17
  */
 import emit from 'mitt'
 const emitter = emit()
@@ -78,7 +78,7 @@ export default class {
   }
   // 监听滚动条
   listenScroll() {
-    // this.container.addEventListener('scroll', this.scrollHander.bind(this))
+    this.container.addEventListener('scroll', this.scrollHander.bind(this))
   }
   // 挂载之后初始化容器dom
   initContainerDom() {
