@@ -3,7 +3,7 @@
  * @Description: 
  * @CreateDate: 
  * @LastEditor: 
- * @LastEditTime: 2022-11-03 14:46:53
+ * @LastEditTime: 2022-11-07 17:19:36
 -->
 <template>
   <div class="container">
@@ -141,6 +141,7 @@ export default {
     }
   },
   created() {
+    activeIndexs = []
     console.log("created");
     // 静态数据
     if (this.isStatic) {
