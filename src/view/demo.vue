@@ -8,24 +8,28 @@
 <template>
   <div class="container">
     <div v-if="gening" class="mask">mock数据生成中....</div>
-    <div class="button-container">
-      <span :class="l === 0 ? 'btn-active' : 'btn'" @click="() => setDataSize(0)">1000数据</span>
-      <span :class="l === 1 ? 'btn-active' : 'btn'" @click="() => setDataSize(1)">10000数据</span>
-      <span :class="l === 2 ? 'btn-active' : 'btn'" @click="() => setDataSize(2)">100000数据</span>
-      <span :class="l === 3 ? 'btn-active' : 'btn'" @click="() => setDataSize(3)">1000000数据</span>
+    <div style="display: flex;justify-content: center;margin-top: 100px">
+      <div>
+      数据量：
+      <span :class="l === 0 ? 'btn-active' : 'btn'" @click="() => setDataSize(0, 1, 3, 5)">15</span>
+      <span :class="l === 1 ? 'btn-active' : 'btn'" @click="() => setDataSize(1, 1, 10, 10)">100</span>
+      <span :class="l === 2 ? 'btn-active' : 'btn'" @click="() => setDataSize(2, 3, 10, 10)">300</span>
+      <span :class="l === 3 ? 'btn-active' : 'btn'" @click="() => setDataSize(3, 10, 10, 10)">1000</span>
+      <span :class="l === 4 ? 'btn-active' : 'btn'" @click="() => setDataSize(4, 100, 100, 100)">1000000</span>
     </div>
-    <div class="button-container" style="margin-top: 10px;">
+    <div >
       <span class="button" @click="getSeleced">获取当前选中</span>
       <span class="button" @click="selectByIds">设置勾选</span>
       <span class="button" @click="clearSelect">取消勾选</span>
-      <span class="button" @click="isShowCheckbox">隐藏展示勾选</span>
+      <!-- <span class="button" @click="isShowCheckbox">隐藏展示勾选</span> -->
       <span class="button" @click="isShowOperateBtn">隐藏展示操作</span>
     </div>
+    </div>
     <div class="demo-container">
-      <virtual-tree :key="key" :default-checked-keys="defaultCheckedKeys" ref="virtualTree" v-slot="{ row }"
+      <v-tree :key="key" :default-checked-keys="defaultCheckedKeys" ref="virtualTree" v-slot="{ row }"
         :height="600" :width="800" :row-height="24" :data="data" :level-indent="20" :checkbox-bg="checkboxBg"
         :show-checkbox="showCheckbox" @select-change="selectChange" @node-click="nodeClick">
-        {{ row.name }}
+        {{ row.position }}
         <span v-if="showOperateBtn">
           <span class="operateBtn" @click.stop="update(row)"><svg t="1666276805678" class="icon" viewBox="0 0 1024 1024"
               version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4033" width="16" height="16">
@@ -49,93 +53,94 @@
                 p-id="4216" fill="#F56C6C"></path>
             </svg></span>
         </span>
-      </virtual-tree>
+      </v-tree>
     </div>
   </div>
 </template>
 
 <script>
-import VirtualTree from '@/components/wraper/Wraper.vue'
-// import { VirtualTree } from 'zg-virtual-tree'
+import VTree from '@/lib/VTree.vue'
 import { genTreeData } from '@/mock'
 export default {
   name: 'tree-demo',
   components: {
-    VirtualTree,
+    VTree,
   },
-  data() {
+  data () {
     return {
-      gening: true,
-      l: 3,
+      gening: false,
+      l: 0,
       key: 112,
       data0: [],
       data1: [],
       data2: [],
       data3: [],
-      data: genTreeData(10, 100, 100),
+      data4: [],
+      data: [],
       defaultCheckedKeys: [],
       checkboxBg: '',
       showCheckbox: true,
       showOperateBtn: false,
     }
   },
-  created() {
-    this.gening = true
-    setTimeout(() => {
-      this.mock()
-    }, 0)
+  created () {
+    this.setDataSize(0, 1, 3, 5)
   },
   methods: {
-    mock() {
-      this.data0 = genTreeData(1, 10, 100)
-      this.data1 = genTreeData(10, 10, 100)
-      this.data2 = genTreeData(10, 100, 100)
-      this.data3 = genTreeData(10, 100, 1000)
-      this.gening = false
-      // this.setDataSize(this.l)
-    },
-    setDataSize(l) {
+    setDataSize (l, i, j, k) {
       this.l = l
       this.data = this[`data${l}`]
-      this.key++
+      console.log(this.data.length);
+      if (!this.data.length) {
+        this.gening = true
+        setTimeout(() => {
+          this.data = this[`data${l}`] = genTreeData(i, j, k) // 视图更新了
+          this.gening = false
+          this.key++
+        }, 0)
+      } else {
+        this.key++
+      }
+
+
     },
-    dataFn(pageNo, pageSize) {
+    dataFn (pageNo, pageSize) {
       console.log(pageNo, pageSize)
-      return data
+      return []
     },
-    update(row) {
+    update (row) {
       console.log('更新', row)
     },
-    add(row) {
+    add (row) {
       console.log('添加', row)
     },
-    remove(row) {
+    remove (row) {
       console.log('删除', row)
     },
-    isShowOperateBtn() {
+    isShowOperateBtn () {
       this.showOperateBtn = !this.showOperateBtn
     },
-    selectChange(rows) {
+    selectChange (rows) {
       console.log('select-change', rows)
     },
-    nodeClick(row) {
+    nodeClick (row) {
       console.log('node-click', row)
     },
-    getSeleced() {
+    getSeleced () {
       console.log(this.$refs.virtualTree.getSelect())
       alert(JSON.stringify(this.$refs.virtualTree.getSelect()))
     },
-    clearSelect() {
+    clearSelect () {
       this.defaultCheckedKeys = []
     },
-    selectByIds() {
-      this.defaultCheckedKeys = [1, 2, 3, 4]
-      console.log(this.$refs.virtualTree.getSelect())
+    selectByIds () {
+      this.defaultCheckedKeys = ['0-0-0', '0-0-2']
+      alert("设置选中：['0-0-0', '0-0-2']")
     },
-    isShowCheckbox() {
+    isShowCheckbox () {
       this.showCheckbox = !this.showCheckbox
     },
-    setColor() {
+    setColor () {
       this.checkboxBg === '' ? (this.checkboxBg = '#ffe3d5') : (this.checkboxBg = '')
     },
   },

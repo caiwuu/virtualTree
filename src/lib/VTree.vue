@@ -7,22 +7,22 @@
 -->
 <template>
   <div class="container">
-    <div :id="uuid" class="tree-wraper" :style="style">
-      <tree :default-checked-keys="defaultCheckedKeys" ref="tree" v-slot="{ ...scope }" :style="innerStyle"
+    <div :id="uuid" class="v-tree" :style="style">
+      <v-tree-items :ve="virtuaListEngine" :default-checked-keys="defaultCheckedKeys" ref="tree" v-slot="{ ...scope }" :style="innerStyle"
         :height="height" :width="height" :row-height="rowHeight" :level-indent="levelIndent"
-        :show-checkbox="showCheckbox" :checkbox-bg="checkboxBg" checkOnClickNode :data="rangeData"
+        :show-checkbox="showCheckbox" :checkbox-bg="checkboxBg" check-on-click-node :check-strictly="false" :data="rangeData"
         @collapse-change="collapseChange" @select-change="selectChange" @node-click="nodeClick">
         <slot v-bind="scope"></slot>
-      </tree>
+      </v-tree-items>
     </div>
-    <scroll-bar ref="scrollBar" :height="height"></scroll-bar>
+    <v-scroll-bar ref="scrollBar" :height="height"></v-scroll-bar>
   </div>
 </template>
 
 <script>
-import Tree from '@/components/tree/Tree.vue'
-import VirtualListEngine from '@/core/VirtualEngine'
-import scrollBar from '../scrollBar/scrollBar'
+import VTreeItems from './VTreeItems.vue'
+import VirtualEngine from './VirtualEngine'
+import VScrollBar from './VScrollBar.vue'
 import uuid from '@/utils/uuid'
 import search from '@/utils/search'
 let activeIndexs = []
@@ -48,12 +48,11 @@ export default {
     sectionSize: Number,
     checkboxBg: String,
   },
-  data() {
+  data () {
     return {
       dataSize: 1,
       rangeData: [],
       allData: [], // 总数据池
-      activeData: [], // 活数据池
       uuid: uuid(),
       start: 0,
       end: 0,
@@ -65,40 +64,34 @@ export default {
     }
   },
   methods: {
-    getSelect() {
-      const ids = this.$refs.tree.getSelect()
-      console.time('getSelect')
-      const selectedItem = ids.map(idx => this.allData.find(ele => ele.id === idx))
-      console.timeEnd('getSelect');
-      return selectedItem
+    getSelect () {
+      // const ids = this.$refs.tree.getSelect()
+      // console.time('getSelect')
+      // const selectedItem = ids.map(idx => this.allData.find(ele => ele.id === idx))
+      // console.timeEnd('getSelect');
+      return this.$refs.tree.getSelect()
     },
-    selectChange(rows) {
+    selectChange (rows) {
       this.$emit('select-change', rows)
     },
-    nodeClick(row) {
+    nodeClick (row) {
       this.$emit('node-click', row)
     },
-    collapseChange(item, index) {
+    collapseChange (item, index) {
       const { level, collapsed } = item
       const activeIdx = index + this.start
       // 折叠行为
-      if (collapsed) {
+      if (!collapsed) {
         item.collapsed = true
-        // for (let idx = activeIdx + 1; idx < this.activeData.length; idx++) {
         for (let idx = activeIdx + 1; idx < activeIndexs.length; idx++) {
-          // const ele = this.activeData[idx] // 方案 1
-          // const ele = this.allData[this.activeData[idx]] // 方案2
-          const ele = this.allData[activeIndexs[idx]] // 方案3
+          const ele = this.allData[activeIndexs[idx]]
           if (level >= ele.level) {
-            // this.activeData = this.activeData.slice(0, activeIdx + 1).concat(this.activeData.slice(idx))
-            console.time('折叠')
             activeIndexs = activeIndexs.slice(0, activeIdx + 1).concat(activeIndexs.slice(idx))
-            console.timeEnd('折叠');
             this.setRangeData()
             return
           }
         }
-        // this.activeData = this.activeData.slice(0, activeIdx + 1)
+        // case：尾部折叠
         activeIndexs = activeIndexs.slice(0, activeIdx + 1)
         this.setRangeData()
       } else {
@@ -109,14 +102,10 @@ export default {
         let queue = [item]
         const res = []
         for (let idx = i + 1; idx < this.allData.length; idx++) {
-          // debugger
           const ele = this.allData[idx]
           let lastQueueEle = queue[queue.length - 1]
           if (level >= ele.level) {
-            console.time('展开')
-            // this.activeData = this.activeData.slice(0, activeIdx + 1).concat(res, this.activeData.slice(activeIdx + 1))
             activeIndexs = activeIndexs.slice(0, activeIdx + 1).concat(res, activeIndexs.slice(activeIdx + 1))
-            console.timeEnd('展开');
             this.setRangeData()
             return
           }
@@ -126,43 +115,36 @@ export default {
             lastQueueEle = queue[queue.length - 1]
           }
           if (!lastQueueEle.collapsed) {
-            // res.push(ele) // 方案 1
-            res.push(idx) // 方案 2
+            res.push(idx)
             if (lastQueueEle.level < ele.level) queue.push(ele)
           }
         }
-        // this.activeData = this.activeData.slice(0, activeIdx + 1).concat(res, this.activeData.slice(activeIdx + 1))
         activeIndexs = activeIndexs.slice(0, activeIdx + 1).concat(res, activeIndexs.slice(activeIdx + 1))
         this.setRangeData()
       }
     },
-    setRangeData() {
+    setRangeData () {
       console.log("setRangeData");
       this.dataSize = activeIndexs.length
       this.rangeData = activeIndexs.slice(this.start, this.end + 1).map(i => this.allData[i])
     }
   },
-  created() {
+  created () {
     activeIndexs = []
     console.log("created");
     // 静态数据
     if (this.isStatic) {
       this.allData = this.data
-      // 方案 1
-      // this.activeData = [...this.allData]
-      // 方案 2
       for (let index = 0; index < this.allData.length; index++) {
-        // this.activeData.push(index)
         activeIndexs.push(index)
       }
     }
 
-    this.virtuaListEngine = new VirtualListEngine({
+    this.virtuaListEngine = new VirtualEngine({
       container: `#${this.uuid}`,
       rowHeight: this.rowHeight,
       sectionSize: this.sectionSize,
       isStatic: this.isStatic,
-      // dataSize: this.activeData.length,
       dataSize: activeIndexs.length,
     })
     this.virtuaListEngine.on('pageChange', ({ pageNo, pageSize }) => {
@@ -170,7 +152,6 @@ export default {
       // 分页数据
       const partialData = this.data(pageNo, pageSize)
       this.allData.push(...partialData)
-      this.activeData.push(...partialData)
       console.log(partialData);
     })
     this.virtuaListEngine.on('rangeChange', ({ start, end }) => {
@@ -179,44 +160,37 @@ export default {
       this.end = end
     })
   },
-  beforeUnmount() {
+  beforeUnmount () {
     this.virtuaListEngine.destroy()
   },
-  mounted() {
+  mounted () {
     this.virtuaListEngine.run((ve) => {
       this.setRangeData()
       this.$refs.scrollBar.connect(ve)
     })
   },
   watch: {
-    dataSize(nv) {
+    dataSize (nv) {
       this.virtuaListEngine && this.virtuaListEngine.emit('dataSize', nv)
     },
-    start() {
+    start () {
       this.rangeData = activeIndexs.slice(this.start, this.end + 1).map(i => this.allData[i])
     }
   },
   computed: {
-    isStatic() {
+    isStatic () {
       return typeof this.data !== 'function'
     },
-    style() {
+    style () {
       return `height:${this.height}px;overflow: auto;width:${this.width}px;`
     },
-    innerStyle() {
+    innerStyle () {
       return `transform: translateY(${this.start * this.rowHeight}px);`
     },
-    // rangeData() {
-    // 方案 1
-    // return this.activeData.slice(this.start, this.end + 1)
-    // 方案 2
-    // return this.activeData.slice(this.start, this.end + 1).map(i => this.allData[i])
-    // return activeIndexs.slice(this.start, this.end + 1).map(i => this.allData[i])
-    // },
   },
   components: {
-    Tree,
-    scrollBar,
+    VTreeItems,
+    VScrollBar,
   },
 }
 </script>
@@ -226,11 +200,11 @@ export default {
   display: flex;
 }
 
-.tree-wraper {
+.v-tree {
   position: relative;
 }
 
-.tree-wraper::-webkit-scrollbar {
+.v-tree::-webkit-scrollbar {
   display: none;
 }
 </style>
